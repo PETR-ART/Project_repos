@@ -109,11 +109,11 @@ while running:
         pygame.display.set_caption("Окно инициализации")
 
         # Отображение изображения
-        fon = pygame.transform.scale(load_image('first_image.jpg'), (window_width, window_height))
+        fon = pygame.transform.scale(load_image('first_image.webp'), (window_width, window_height))
         window.blit(fon, (0, 0))
 
         # Отображение текста "Введите логин"
-        text_log = font.render('Введите логин', True, 'Black')
+        text_log = font.render('Введите логин', True, 'Brown')
         window.blit(text_log, (log_width - 90, log_height - 10, log_width, log_height))
 
         # Отображение окна для ввода логина
