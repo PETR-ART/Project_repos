@@ -29,7 +29,7 @@ def start():
     pygame.init()
     size = width, height = 800, 600
     screen = pygame.display.set_mode(size)
-    fon = pygame.transform.scale(load_image('fon1.jpg'), (width, height))
+    fon = pygame.transform.scale(load_image('start_image.jpg'), (width, height))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
     text_coord = 50

@@ -108,18 +108,27 @@ while running:
         window.fill('yellow')
         pygame.display.set_caption("Окно инициализации")
 
+        # Отображение изображения
+        fon = pygame.transform.scale(load_image('first_image.jpg'), (window_width, window_height))
+        window.blit(fon, (0, 0))
+
         # Отображение текста "Введите логин"
-        text_log = font.render('Введите логин', True, 'white')
+        text_log = font.render('Введите логин', True, 'Black')
         window.blit(text_log, (log_width - 90, log_height - 10, log_width, log_height))
 
         # Отображение окна для ввода логина
         pygame.draw.rect(window, 'brown', (input_width, input_height,  window_width - input1_width, 100))
 
-        #Отображение кнопки продолжения
+        #Отображение кнопок
         pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y - 5, button_width + 80, button_height + 5))
         text_continue = font.render("Продолжить", True, 'white')
         window.blit(text_continue, (button_x + button_width // 2 - text_continue.get_width() // 2,
                                     button_exit_y + button_height // 2 - text_continue.get_height() // 2))
+
+        pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5))
+        text_back = font.render("Назад", True, 'white')
+        window.blit(text_back, (button_x + button_width // 2 - text_back.get_width() // 2,
+                                    button_exit_y + button_height // 2 - text_back.get_height() // 2 + 70))
 
 
     # Отображение игры после нажатия на кнопку Рейтинг
