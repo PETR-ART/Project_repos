@@ -54,7 +54,7 @@ def start():
                 if event.key == pygame.K_ESCAPE:
                     terminate()
                 if event.key == pygame.K_SPACE:
-                    first(start())
+                    first()
 
     pygame.quit()
 
