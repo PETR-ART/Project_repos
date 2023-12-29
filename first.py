@@ -55,14 +55,16 @@ menu = True
 start = False
 cont = True
 rating = False
+check_settings = False
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            print((mouse_x, mouse_y))
             if menu:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
                 if button_x <= mouse_x <= button_x + button_width:
                     if button_start_y <= mouse_y <= button_start_y + button_height:
                         menu = False
@@ -72,6 +74,19 @@ while running:
                         rating = True
                     elif button_exit_y <= mouse_y <= button_exit_y + button_height:
                         running = False
+            if start:
+                if 310 <= mouse_x <= 490 and 355 <= mouse_y <= 400:
+                    check_settings = True
+                if 310 <= mouse_x <= 490 and 425 <= mouse_y <= 470:
+                    start = False
+                    menu = True
+            if check_settings:
+                if 310 <= mouse_x <= 490 and 425 <= mouse_y <= 470:
+                    check_settings = False
+                    start = True
+
+            if rating:
+                pass
 
     # Отображение главного меню
     if menu:
@@ -79,7 +94,6 @@ while running:
         window.fill('black')
 
         # Отображение изображения
-        #window.blit(start_image, (0, 0))
         fon = pygame.transform.scale(load_image('start_image.jpg'), (window_width, window_height))
         window.blit(fon, (0, 0))
 
@@ -104,8 +118,7 @@ while running:
 
     # Отображение игры после нажатия на кнопку "Start"
     if start:
-        # Очистка экрана и закраска его жёлтым цветом + заголовок окна
-        window.fill('yellow')
+        # Отображение заголовка
         pygame.display.set_caption("Окно инициализации")
 
         # Отображение изображения
@@ -119,7 +132,7 @@ while running:
         # Отображение окна для ввода логина
         pygame.draw.rect(window, 'brown', (input_width, input_height,  window_width - input1_width, 100))
 
-        #Отображение кнопок
+        # Отображение кнопок
         pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y - 5, button_width + 80, button_height + 5))
         text_continue = font.render("Продолжить", True, 'white')
         window.blit(text_continue, (button_x + button_width // 2 - text_continue.get_width() // 2,
@@ -128,14 +141,26 @@ while running:
         pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5))
         text_back = font.render("Назад", True, 'white')
         window.blit(text_back, (button_x + button_width // 2 - text_back.get_width() // 2,
-                                    button_exit_y + button_height // 2 - text_back.get_height() // 2 + 70))
-
+                                button_exit_y + button_height // 2 - text_back.get_height() // 2 + 70))
 
     # Отображение игры после нажатия на кнопку Рейтинг
     if rating:
         # Очистка экрана и закраска его красным цветом
         window.fill('red')
         pygame.display.set_caption("Окно рекордов")
+
+    if check_settings:
+        # Отображение заголовка
+        pygame.display.set_caption("Окно выбора режима")
+
+        # Отображение изображения
+        fon = pygame.transform.scale(load_image('first_image.webp'), (window_width, window_height))
+        window.blit(fon, (0, 0))
+
+        pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5))
+        text_back = font.render("Назад", True, 'white')
+        window.blit(text_back, (button_x + button_width // 2 - text_back.get_width() // 2,
+                                button_exit_y + button_height // 2 - text_back.get_height() // 2 + 70))
 
     # Обновление окна
     pygame.display.update()
