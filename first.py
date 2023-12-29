@@ -56,6 +56,7 @@ start = False
 cont = True
 rating = False
 check_settings = False
+game = False
 
 while running:
     for event in pygame.event.get():
@@ -76,17 +77,23 @@ while running:
                         running = False
             if start:
                 if 310 <= mouse_x <= 490 and 355 <= mouse_y <= 400:
+                    start = False
                     check_settings = True
                 if 310 <= mouse_x <= 490 and 425 <= mouse_y <= 470:
                     start = False
                     menu = True
             if check_settings:
-                if 310 <= mouse_x <= 490 and 425 <= mouse_y <= 470:
+                if 310 <= mouse_x <= 490 and 485 <= mouse_y <= 530:
                     check_settings = False
                     start = True
+                if 310 <= mouse_x <= 490 and 415 <= mouse_y <= 460:
+                    check_settings = False
+                    game = True
 
             if rating:
-                pass
+                if 310 <= mouse_x <= 490 and 485 <= mouse_y <= 530:
+                    rating = False
+                    menu = True
 
     # Отображение главного меню
     if menu:
@@ -145,9 +152,22 @@ while running:
 
     # Отображение игры после нажатия на кнопку Рейтинг
     if rating:
-        # Очистка экрана и закраска его красным цветом
-        window.fill('red')
+        # Отображение заголовка
         pygame.display.set_caption("Окно рекордов")
+
+        # Отображение изображения
+        fon = pygame.transform.scale(load_image('first_image.webp'), (window_width, window_height))
+        window.blit(fon, (0, 0))
+
+        # Отображение текста "Выберите режим"
+        text_check = font.render('Рекорды', True, 'Brown')
+        window.blit(text_check, (350, 60, 400, 80))
+
+        # Отображение кнопок
+        pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y + 125, button_width + 80, button_height + 5))
+        text_back = font.render("Назад", True, 'white')
+        window.blit(text_back, (button_x + button_width // 2 - text_back.get_width() // 2,
+                                button_exit_y + button_height // 2 - text_back.get_height() // 2 + 130))
 
     if check_settings:
         # Отображение заголовка
@@ -157,10 +177,32 @@ while running:
         fon = pygame.transform.scale(load_image('first_image.webp'), (window_width, window_height))
         window.blit(fon, (0, 0))
 
-        pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5))
+        # Отображение текста "Выберите режим"
+        text_check = font.render('Выберите режим', True, 'Brown')
+        window.blit(text_check, (310, 60, 400, 80))
+
+        # Отображение кнопок
+        pygame.draw.rect(window, 'brown', (button_x - 300, button_exit_y - 220, button_width + 80, button_height + 5))
+        text_europe = font.render("Европа", True, 'white')
+        window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 260,
+                                  button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 215))
+
+        pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y + 55, button_width + 80, button_height + 5))
+        text_continue = font.render("Продолжить", True, 'white')
+        window.blit(text_continue, (button_x + button_width // 2 - text_continue.get_width() // 2,
+                                    button_exit_y + button_height // 2 - text_continue.get_height() // 2 + 60))
+
+        pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y + 125, button_width + 80, button_height + 5))
         text_back = font.render("Назад", True, 'white')
         window.blit(text_back, (button_x + button_width // 2 - text_back.get_width() // 2,
-                                button_exit_y + button_height // 2 - text_back.get_height() // 2 + 70))
+                                button_exit_y + button_height // 2 - text_back.get_height() // 2 + 130))
+
+    if game:
+        # Отображение заголовка
+        pygame.display.set_caption("Окно игры")
+
+        # Отображение изображения
+        pygame.draw.rect(window, 'red', (0, 0, window_width, window_height))
 
     # Обновление окна
     pygame.display.update()
