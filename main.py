@@ -37,6 +37,9 @@ window = pygame.display.set_mode((window_width, window_height))
 # Загрузка изображения
 start_image = pygame.transform.scale(load_image('start_image.jpg'), (window_width, window_height))
 first_image = pygame.transform.scale(load_image('first_image.webp'), (window_width, window_height))
+America_image = pygame.transform.scale(load_image('America.jpg'), (window_width, window_height))
+Europe_image = pygame.transform.scale(load_image('Europe.jpg'), (window_width, window_height))
+Asia_image = pygame.transform.scale(load_image('Asia.jpg'), (window_width, window_height))
 
 # Позиция и размеры кнопок
 button_width, button_height = 100, 40
@@ -59,7 +62,9 @@ start = False
 cont = True
 rating = False
 check_settings = False
-game = False
+Go_Europe = False
+Go_America = False
+Go_Asia = False
 
 # Флаги Настроек Стран
 Europe = False
@@ -111,9 +116,6 @@ while running:
                 if 310 <= mouse_x <= 490 and 485 <= mouse_y <= 530:
                     check_settings = False
                     start = True
-                if 310 <= mouse_x <= 490 and 415 <= mouse_y <= 460:
-                    check_settings = False
-                    game = True
 
                 if 100 <= mouse_x <= 280 and 140 <= mouse_y <= 180:
                     if Europe:
@@ -163,11 +165,37 @@ while running:
                         Facts_color = 'red'
                         Facts = True
 
+                if 310 <= mouse_x <= 490 and 415 <= mouse_y <= 460:
+                    if America_color == 'red' and Asia_color == 'brown' and Europe_color == 'brown':
+                        Go_America = True
+                        check_settings = False
+                    if Asia_color == 'red' and America_color == 'brown' and Europe_color == 'brown':
+                        Go_Asia = True
+                        check_settings = False
+                    if Europe_color == 'red' and America_color == 'brown' and Asia_color == 'brown':
+                        Go_Europe = True
+                        check_settings = False
+                    else:
+                        print('WARNING')
+
+
             # Проверка нажатия кнопок в окне рейтинга
             if rating:
                 if 310 <= mouse_x <= 490 and 485 <= mouse_y <= 530:
                     rating = False
                     menu = True
+
+    if Go_America:
+        pygame.display.set_caption('Америка')
+        window.blit(America_image, (0, 0))
+
+    if Go_Europe:
+        pygame.display.set_caption('Европа')
+        window.blit(Europe_image, (0, 0))
+
+    if Go_Asia:
+        pygame.display.set_caption('Азия')
+        window.blit(Asia_image, (0, 0))
 
     # Отображение главного меню
     if menu:
@@ -289,13 +317,6 @@ while running:
         text_back = font.render("Назад", True, 'white')
         window.blit(text_back, (button_x + button_width // 2 - text_back.get_width() // 2,
                                 button_exit_y + button_height // 2 - text_back.get_height() // 2 + 130))
-
-    if game:
-        # Отображение заголовка
-        pygame.display.set_caption("Игра")
-
-        # Отображение изображения
-        pygame.draw.rect(window, 'red', (0, 0, window_width, window_height))
 
     # Обновление окна
     pygame.display.update()
