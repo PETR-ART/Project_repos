@@ -181,50 +181,54 @@ def Check_setting():
     text_check = font.render('Выберите режим', True, 'Brown')
     window.blit(text_check, (310, 60, 400, 80))
 
-    # Отображение кнопок
-    pygame.draw.rect(window, Europe_color, (button_x - 250, button_exit_y - 220, button_width + 80, button_height + 5))
-    text_europe = font.render("Европа", True, 'white')
-    window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 210,
-                              button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 215))
-
-    pygame.draw.rect(window, America_color, (button_x - 50, button_exit_y - 220, button_width + 80, button_height + 5))
-    text_europe = font.render("Америка", True, 'white')
-    window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 10,
-                              button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 215))
-
-    pygame.draw.rect(window, Asia_color, (button_x + 150, button_exit_y - 220, button_width + 80, button_height + 5))
-    text_europe = font.render("Азия", True, 'white')
-    window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 + 190,
-                              button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 215))
-
-    pygame.draw.rect(window, Flags_color,
-                     (button_x - 250, button_exit_y - 120, button_width + 80, button_height + 5))
-    text_europe = font.render("Флаги", True, 'white')
-    window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 210,
-                              button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 118))
-
-    pygame.draw.rect(window, Countries_color,
-                     (button_x - 50, button_exit_y - 120, button_width + 80, button_height + 5))
-    text_europe = font.render("Страны", True, 'white')
-    window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 10,
-                              button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 118))
-
-    pygame.draw.rect(window, Facts_color,
-                     (button_x + 150, button_exit_y - 120, button_width + 80, button_height + 5))
-    text_europe = font.render("Факты", True, 'white')
-    window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 + 190,
-                              button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 118))
-
-    pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y + 55, button_width + 80, button_height + 5))
-    text_continue = font.render("Продолжить", True, 'white')
-    window.blit(text_continue, (button_x + button_width // 2 - text_continue.get_width() // 2,
-                                button_exit_y + button_height // 2 - text_continue.get_height() // 2 + 60))
-
-    pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y + 125, button_width + 80, button_height + 5))
-    text_back = font.render("Назад", True, 'white')
-    window.blit(text_back, (button_x + button_width // 2 - text_back.get_width() // 2,
-                            button_exit_y + button_height // 2 - text_back.get_height() // 2 + 130))
     while True:
+        # Отображение кнопок
+        pygame.draw.rect(window, Europe_color,
+                         (button_x - 250, button_exit_y - 220, button_width + 80, button_height + 5))
+        text_europe = font.render("Европа", True, 'white')
+        window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 210,
+                                  button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 215))
+
+        pygame.draw.rect(window, America_color,
+                         (button_x - 50, button_exit_y - 220, button_width + 80, button_height + 5))
+        text_europe = font.render("Америка", True, 'white')
+        window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 10,
+                                  button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 215))
+
+        pygame.draw.rect(window, Asia_color,
+                         (button_x + 150, button_exit_y - 220, button_width + 80, button_height + 5))
+        text_europe = font.render("Азия", True, 'white')
+        window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 + 190,
+                                  button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 215))
+
+        pygame.draw.rect(window, Flags_color,
+                         (button_x - 250, button_exit_y - 120, button_width + 80, button_height + 5))
+        text_europe = font.render("Флаги", True, 'white')
+        window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 210,
+                                  button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 118))
+
+        pygame.draw.rect(window, Countries_color,
+                         (button_x - 50, button_exit_y - 120, button_width + 80, button_height + 5))
+        text_europe = font.render("Страны", True, 'white')
+        window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 10,
+                                  button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 118))
+
+        pygame.draw.rect(window, Facts_color,
+                         (button_x + 150, button_exit_y - 120, button_width + 80, button_height + 5))
+        text_europe = font.render("Факты", True, 'white')
+        window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 + 190,
+                                  button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 118))
+
+        pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y + 55, button_width + 80, button_height + 5))
+        text_continue = font.render("Продолжить", True, 'white')
+        window.blit(text_continue, (button_x + button_width // 2 - text_continue.get_width() // 2,
+                                    button_exit_y + button_height // 2 - text_continue.get_height() // 2 + 60))
+
+        pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y + 125, button_width + 80, button_height + 5))
+        text_back = font.render("Назад", True, 'white')
+        window.blit(text_back, (button_x + button_width // 2 - text_back.get_width() // 2,
+                                button_exit_y + button_height // 2 - text_back.get_height() // 2 + 130))
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
