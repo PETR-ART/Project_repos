@@ -1,5 +1,6 @@
 import pygame
 import os
+import random
 
 
 # для загрузки файлов
@@ -40,6 +41,7 @@ first_image = pygame.transform.scale(load_image('first_image.webp'), (window_wid
 America_image = pygame.transform.scale(load_image('America.jpg'), (window_width, window_height))
 Europe_image = pygame.transform.scale(load_image('Europe.jpg'), (window_width, window_height))
 Asia_image = pygame.transform.scale(load_image('Asia.jpg'), (window_width, window_height))
+Player_image = pygame.transform.scale(load_image('player.png'), (window_width, window_height))
 
 # Позиция и размеры кнопок
 button_width, button_height = 100, 40
@@ -56,10 +58,16 @@ input1_width = (window_width - input_width) // 2
 input_height = window_height * 0.4
 
 # Размеры для клеточного поля
-left = 10
-top = 10
-cell_size = 30
+cell_size = 40
 line_width = 1
+
+# Местоположение игрока на поле
+pos_x = 0
+pos_y = 0
+
+# Подготовка изображений
+my_image = pygame.image.load("data/images/player.png").convert_alpha()
+scaled_image = pygame.transform.scale(Player_image, (cell_size, cell_size))
 
 # Флаги для отслеживания состояния игры и нажатых кнопок
 running = True
@@ -71,7 +79,7 @@ check_settings = False
 Go_Europe = False
 Go_America = False
 Go_Asia = False
-
+game = False
 # Флаги Настроек Стран
 Europe = False
 America = False
@@ -84,10 +92,17 @@ Asia_color = 'brown'
 Flags = False
 Countries = False
 Facts = False
+tip = ''
 # Флаги Цвета Кнопок У Настроек Режима
 Flags_color = 'brown'
 Countries_color = 'brown'
 Facts_color = 'brown'
+
+# Спрайты
+Player = None
+all_sprites = pygame.sprite.Group()
+tiles_group = pygame.sprite.Group()
+player_group = pygame.sprite.Group()
 
 # запуск
 while running:
@@ -173,63 +188,52 @@ while running:
 
                 if 310 <= mouse_x <= 490 and 415 <= mouse_y <= 460:
                     if America_color == 'red' and Asia_color == 'brown' and Europe_color == 'brown':
-                        Go_America = True
+                        tip = 'America'
                         check_settings = False
                     elif Asia_color == 'red' and America_color == 'brown' and Europe_color == 'brown':
-                        Go_Asia = True
+                        tip = 'Asia'
                         check_settings = False
                     elif Europe_color == 'red' and America_color == 'brown' and Asia_color == 'brown':
-                        Go_Europe = True
+                        tip = 'Europe'
                         check_settings = False
                     else:
                         print('Тут ошибка')
+                    game = True
             # Проверка нажатия кнопок в окне рейтинга
             if rating:
                 if 310 <= mouse_x <= 490 and 485 <= mouse_y <= 530:
                     rating = False
                     menu = True
 
+    # Окно с клеточным полем
+    if game:
+        pygame.display.set_caption('Игра')
+        pygame.draw.rect(window, 'white', (0, 0, window_width, window_height))
+        for y_ in range(window_height):
+            for x_ in range(window_width):
+                x, y = x_ * cell_size, y_ * cell_size
+                pygame.draw.rect(window, pygame.Color('black'),
+                                 (x, y, cell_size, cell_size), line_width)
+        x, y = mouse_x, mouse_y
+        x_, y_ = x // cell_size, y // cell_size
+        if (x_ >= 0) and (x_ < window_width) and (y_ >= 0) and (y_ < window_height):
+            print(x_, y_)
+        window.blit(scaled_image, (pos_x, pos_y))
+
     # Карта Америки
     if Go_America:
         pygame.display.set_caption('Америка')
         window.blit(America_image, (0, 0))
-        for y_ in range(window_height):
-            for x_ in range(window_width):
-                x, y = left + x_ * cell_size, top + y_ * cell_size
-                pygame.draw.rect(window, pygame.Color('grey'),
-                                 (x, y, cell_size, cell_size), line_width)
-        x, y = mouse_x, mouse_y
-        x_, y_ = (x - left) // cell_size, (y - top) // cell_size
-        if (x_ >= 0) and (x_ < window_width) and (y_ >= 0) and (y_ < window_height):
-            print(x_, y_)
 
     # Карта Европы
     if Go_Europe:
         pygame.display.set_caption('Европа')
         window.blit(Europe_image, (0, 0))
-        for y_ in range(window_height):
-            for x_ in range(window_width):
-                x, y = left + x_ * cell_size, top + y_ * cell_size
-                pygame.draw.rect(window, pygame.Color('grey'),
-                                 (x, y, cell_size, cell_size), line_width)
-        x, y = mouse_x, mouse_y
-        x_, y_ = (x - left) // cell_size, (y - top) // cell_size
-        if (x_ >= 0) and (x_ < window_width) and (y_ >= 0) and (y_ < window_height):
-            print(x_, y_)
 
     # Карта Азии
     if Go_Asia:
         pygame.display.set_caption('Азия')
         window.blit(Asia_image, (0, 0))
-        for y_ in range(window_height):
-            for x_ in range(window_width):
-                x, y = left + x_ * cell_size, top + y_ * cell_size
-                pygame.draw.rect(window, pygame.Color('grey'),
-                                 (x, y, cell_size, cell_size), line_width)
-        x, y = mouse_x, mouse_y
-        x_, y_ = (x - left) // cell_size, (y - top) // cell_size
-        if (x_ >= 0) and (x_ < window_width) and (y_ >= 0) and (y_ < window_height):
-            print(x_, y_)
 
     # Отображение главного меню
     if menu:
