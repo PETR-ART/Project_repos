@@ -329,11 +329,7 @@ def Game(mouse_x, mouse_y):
                 print((mouse_x, mouse_y))
         pygame.display.flip()
 
-
-
-tile_width = tile_height = 50
-player = None
-
+# Будующие спрайты
 all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
@@ -346,6 +342,7 @@ while running:
             pygame.quit()
             sys.exit()
 
+    # В процессе
     tiles_group.draw(window)
     player_group.draw(window)
     pygame.display.flip()
