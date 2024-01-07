@@ -296,11 +296,12 @@ def Check_setting():
                         tip = 'Europe'
                     else:
                         print('Тут ошибка')
-                    Game(0, 0)
+                    Game(0, 0, tip)
         pygame.display.flip()
 
 
-def Game(player_x, player_y):
+def Game(player_x, player_y, tip):
+    print(tip)
     cell_size = 40
     line_width = 1
     pygame.display.set_caption('Игра')
