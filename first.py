@@ -308,17 +308,10 @@ def Game(mouse_x, mouse_y):
     line_width = 1
     pygame.display.set_caption('Игра')
     pygame.draw.rect(window, 'white', (0, 0, window_width, window_height))
-    for y_ in range(window_height):
-        for x_ in range(window_width):
-            x, y = x_ * cell_size, y_ * cell_size
-            pygame.draw.rect(window, pygame.Color('black'),
-                             (x, y, cell_size, cell_size), line_width)
-    x, y = mouse_x, mouse_y
-    x_, y_ = x // cell_size, y // cell_size
-    if (x_ >= 0) and (x_ < window_width) and (y_ >= 0) and (y_ < window_height):
-        print(x_, y_)
-    scaled_image = pygame.transform.scale(Player_image, (cell_size, cell_size))
-    window.blit(scaled_image, (0, 0))
+
+    player_x = 0
+    player_y = 0
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -326,8 +319,39 @@ def Game(mouse_x, mouse_y):
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                print((mouse_x, mouse_y))
+                Game(mouse_x, mouse_y)
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_w or event.key == pygame.K_UP:
+                    player_y -= cell_size
+                    if player_y < 0:
+                        player_y += cell_size
+                elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
+                    player_y += cell_size
+                    if player_y >= window_height:
+                        player_y -= cell_size
+                elif event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                    player_x -= cell_size
+                    if player_x < 0:
+                        player_x += cell_size
+                elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                    player_x += cell_size
+                    if player_x >= window_width:
+                        player_x -= cell_size
+
+        window.fill((255, 255, 255))
+        for y_ in range(window_height):
+            for x_ in range(window_width):
+                x, y = x_ * cell_size, y_ * cell_size
+                pygame.draw.rect(window, pygame.Color('black'),
+                                 (x, y, cell_size, cell_size), line_width)
+        x, y = player_x, player_y
+        x_, y_ = x // cell_size, y // cell_size
+        if (x_ >= 0) and (x_ < window_width) and (y_ >= 0) and (y_ < window_height):
+            scaled_image = pygame.transform.scale(Player_image, (cell_size, cell_size))
+            window.blit(scaled_image, (x, y))
         pygame.display.flip()
+
 
 # Будующие спрайты
 all_sprites = pygame.sprite.Group()
