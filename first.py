@@ -290,29 +290,24 @@ def Check_setting():
                 if 310 <= mouse_x <= 490 and 415 <= mouse_y <= 460:
                     if America_color == 'red' and Asia_color == 'brown' and Europe_color == 'brown':
                         tip = 'America'
-                        check_settings = False
                     elif Asia_color == 'red' and America_color == 'brown' and Europe_color == 'brown':
                         tip = 'Asia'
-                        check_settings = False
                     elif Europe_color == 'red' and America_color == 'brown' and Asia_color == 'brown':
                         tip = 'Europe'
-                        check_settings = False
                     else:
                         print('Тут ошибка')
-                    Game(mouse_x, mouse_y)
+                    Game(0, 0)
         pygame.display.flip()
 
 
-def Game(mouse_x, mouse_y):
+def Game(player_x, player_y):
     cell_size = 40
     line_width = 1
     pygame.display.set_caption('Игра')
     pygame.draw.rect(window, 'white', (0, 0, window_width, window_height))
+    scaled_image = pygame.transform.scale(Player_image, (cell_size, cell_size))
 
-    player_x = 0
-    player_y = 0
-
-    while True:
+    while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -340,16 +335,12 @@ def Game(mouse_x, mouse_y):
                         player_x -= cell_size
 
         window.fill((255, 255, 255))
-        for y_ in range(window_height):
-            for x_ in range(window_width):
-                x, y = x_ * cell_size, y_ * cell_size
+        for y_ in range(0, window_height, cell_size):
+            for x_ in range(0, window_width, cell_size):
                 pygame.draw.rect(window, pygame.Color('black'),
-                                 (x, y, cell_size, cell_size), line_width)
-        x, y = player_x, player_y
-        x_, y_ = x // cell_size, y // cell_size
-        if (x_ >= 0) and (x_ < window_width) and (y_ >= 0) and (y_ < window_height):
-            scaled_image = pygame.transform.scale(Player_image, (cell_size, cell_size))
-            window.blit(scaled_image, (x, y))
+                                 (x_, y_, cell_size, cell_size), line_width)
+        if player_x >= 0 and player_x < window_width and player_y >= 0 and player_y < window_height:
+            window.blit(scaled_image, (player_x, player_y))
         pygame.display.flip()
 
 
