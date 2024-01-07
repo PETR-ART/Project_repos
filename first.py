@@ -315,7 +315,7 @@ def Game(player_x, player_y, tip):
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                Game(mouse_x, mouse_y)
+                print(mouse_x, mouse_y)
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w or event.key == pygame.K_UP:
