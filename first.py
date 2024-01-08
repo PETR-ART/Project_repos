@@ -30,6 +30,7 @@ def load_image(name, colorkey=None):
 pygame.init()
 
 font = pygame.font.Font(None, 38)
+font1 = pygame.font.Font(None, 60)
 
 window_size = window_width, window_height = 800, 600
 window = pygame.display.set_mode(window_size)
@@ -167,7 +168,6 @@ def Check_setting():
     Flags = False
     Countries = False
     Facts = False
-    tip = ''
     # Флаги Цвета Кнопок У Настроек Режима
     Flags_color = 'brown'
     Countries_color = 'brown'
@@ -289,24 +289,37 @@ def Check_setting():
 
                 if 310 <= mouse_x <= 490 and 415 <= mouse_y <= 460:
                     if America_color == 'red' and Asia_color == 'brown' and Europe_color == 'brown':
-                        tip = 'America'
+                        tip1 = 'America'
                     elif Asia_color == 'red' and America_color == 'brown' and Europe_color == 'brown':
-                        tip = 'Asia'
+                        tip1 = 'Asia'
                     elif Europe_color == 'red' and America_color == 'brown' and Asia_color == 'brown':
-                        tip = 'Europe'
+                        tip1 = 'Europe'
                     else:
-                        print('Тут ошибка')
-                    Game(0, 0, tip)
+                        tip1 = ''
+                    if Flags_color == 'red' and Facts_color == 'brown' and Countries_color == 'brown' and tip1 != '':
+                        tip2 = 'Flags'
+                        Game(0, 0, tip1, tip2)
+                    elif Facts_color == 'red' and Flags_color == 'brown' and Countries_color == 'brown' and tip1 != '':
+                        tip2 = 'Facts'
+                        Game(0, 0, tip1, tip2)
+                    elif Countries_color == 'red' and Flags_color == 'brown' and Facts_color == 'brown' and tip1 != '':
+                        tip2 = 'Countries'
+                        Game(0, 0, tip1, tip2)
+                    else:
+                        print('ОШИБКА')
         pygame.display.flip()
 
 
-def Game(player_x, player_y, tip):
-    print(tip)
+def Game(player_x, player_y, tip1, tip2):
+    print(tip1, tip2)
     cell_size = 40
     line_width = 1
-    pygame.display.set_caption('Игра')
-    pygame.draw.rect(window, 'white', (0, 0, window_width, window_height))
     scaled_image = pygame.transform.scale(Player_image, (cell_size, cell_size))
+    pygame.display.set_caption('Игра')
+    clock = pygame.time.Clock()
+
+    counter, text = 10, '10'.rjust(3)
+    pygame.time.set_timer(pygame.USEREVENT, 1000)
 
     while running:
         for event in pygame.event.get():
@@ -316,6 +329,12 @@ def Game(player_x, player_y, tip):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 print(mouse_x, mouse_y)
+            if event.type == pygame.USEREVENT:
+                counter -= 1
+                if counter > 0:
+                    text = str(counter).rjust(3)
+                else:
+                    end(res_game='Game over')
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w or event.key == pygame.K_UP:
@@ -336,12 +355,37 @@ def Game(player_x, player_y, tip):
                         player_x -= cell_size
 
         window.fill((255, 255, 255))
+        pygame.draw.rect(window, 'red', (760, 560, 800, 600))
         for y_ in range(0, window_height, cell_size):
             for x_ in range(0, window_width, cell_size):
                 pygame.draw.rect(window, pygame.Color('black'),
                                  (x_, y_, cell_size, cell_size), line_width)
-        if player_x >= 0 and player_x < window_width and player_y >= 0 and player_y < window_height:
+        if (player_x >= 0) and (player_x < window_width) and (player_y >= 0) and (player_y < window_height):
             window.blit(scaled_image, (player_x, player_y))
+
+        window.blit(font.render(text, True, (0, 0, 0)), (32, 48))
+        pygame.display.flip()
+        clock.tick(30)
+
+        if player_x == 760 and player_y == 560:
+            end(res_game='Victory')
+
+
+def end(res_game):
+    pygame.display.set_caption('Конец игры')
+    window.blit(first_image, (0, 0))
+    text_res = font1.render(res_game, True, 'Brown')
+    window.blit(text_res, (320, 100))
+    text_go = font.render('Для продолжения нажмите на любую клавишу', True, 'Brown')
+    window.blit(text_go, (70, 150))
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                Menu()
         pygame.display.flip()
 
 
@@ -351,8 +395,8 @@ tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 
 running = True
+Menu()
 while running:
-    Menu()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
