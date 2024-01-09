@@ -1,3 +1,4 @@
+import random
 import sys
 import pygame
 import os
@@ -26,6 +27,31 @@ def load_image(name, colorkey=None):
     # отправляем изображение
     return image
 
+
+America = {'США': 'Flag_USA.png', 'Канада': 'Flag_Canada.png', 'Мексика': 'Flag_Mexico.png', 'Куба': 'Flag_Cuba.png'}
+Asia = {'Япония': 'Flag_Japan.png', 'Китай': 'Flag_China.png', 'Индия': 'Flag_India.png', 'Индонезия': 'Flag_Indonesia.png'}
+Europe = {'Россия': 'Flag_Russia.png', 'Германия': 'Flag_Germany.png', 'Италия': 'Flag_Itali.png', 'Казахстан': 'Flag_Kazahstan.png'}
+random_country_rus = random.choice(list(Europe.keys()) + list(Asia.keys()) + list(America.keys()))
+random_country_eng = ""
+if random_country_rus in Europe:
+    random_country_eng = Europe[random_country_rus]
+elif random_country_rus in Asia:
+    random_country_eng = Asia[random_country_rus]
+else:
+    random_country_eng = America[random_country_rus]
+
+new_random_countries_rus = random.sample(list(Europe.keys()) + list(Asia.keys()) + list(America.keys()), k=3)
+while random_country_rus in new_random_countries_rus:
+    new_random_countries_rus = random.sample(list(Europe.keys()) + list(Asia.keys()) + list(America.keys()), k=3)
+
+random_countries_rus = new_random_countries_rus + [random_country_rus]
+# перемешиваем список
+random.shuffle(random_countries_rus)
+
+#print('Название флага:')
+#print(random_country_eng)
+#print('Варианты ответа')
+#print(', '.join(random_countries_rus))
 
 pygame.init()
 
@@ -317,9 +343,10 @@ def Game(player_x, player_y, tip1, tip2):
     scaled_image = pygame.transform.scale(Player_image, (cell_size, cell_size))
     pygame.display.set_caption('Игра')
     clock = pygame.time.Clock()
+    is_go = False
 
     counter, text = 10, '10'.rjust(3)
-    pygame.time.set_timer(pygame.USEREVENT, 1000)
+    pygame.time.set_timer(pygame.USEREVENT, 1500)
 
     while running:
         for event in pygame.event.get():
@@ -362,8 +389,8 @@ def Game(player_x, player_y, tip1, tip2):
                                  (x_, y_, cell_size, cell_size), line_width)
         if (player_x >= 0) and (player_x < window_width) and (player_y >= 0) and (player_y < window_height):
             window.blit(scaled_image, (player_x, player_y))
-
-        window.blit(font.render(text, True, (0, 0, 0)), (32, 48))
+        pygame.draw.rect(window, 'grey', (720, 0, 800, 40))
+        window.blit(font.render(text, True, (0, 0, 0)), (720, 10))
         pygame.display.flip()
         clock.tick(30)
 
