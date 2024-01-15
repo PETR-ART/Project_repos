@@ -81,9 +81,9 @@ input_height = window_height * 0.4
 
 start_image = pygame.transform.scale(load_image('start_image.jpg'), window_size)
 first_image = pygame.transform.scale(load_image('first_image.webp'), window_size)
-# America_image = pygame.transform.scale(load_image('America.jpg'), window_size)
-# Europe_image = pygame.transform.scale(load_image('Europe.jpg'), window_size)
-# Asia_image = pygame.transform.scale(load_image('Asia.jpg'), window_size)
+America_image = pygame.transform.scale(load_image('America.jpg'), window_size)
+Europe_image = pygame.transform.scale(load_image('Europe.jpg'), window_size)
+Asia_image = pygame.transform.scale(load_image('Asia.jpg'), window_size)
 player_image = pygame.transform.scale(load_image('player.png'), window_size)
 
 
@@ -199,12 +199,12 @@ def Check_setting():
     Asia_color = 'brown'
 
     # Флаги Настроек Режима
-    mod_eng = False
+    mod_towns = False
     mod_flag = False
 
     # Флаги Цвета Кнопок У Настроек Режима
     Flags_color = 'brown'
-    Eng_color = 'brown'
+    Town_color = 'brown'
 
     # Отображение заголовка
     pygame.display.set_caption("Выбор Режима")
@@ -240,10 +240,10 @@ def Check_setting():
         window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 160,
                                   button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 118))
 
-        pygame.draw.rect(window, Eng_color,
-                         (button_x, button_exit_y - 120, button_width + 200, button_height + 5))
-        text_europe = font.render("Английские Названия", True, 'white')
-        window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 + 100,
+        pygame.draw.rect(window, Town_color,
+                         (button_x + 80, button_exit_y - 120, button_width + 80, button_height + 5))
+        text_europe = font.render("Города", True, 'white')
+        window.blit(text_europe, (button_x + 15 + button_width // 2 - text_europe.get_width() // 2 + 100,
                                   button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 118))
 
         pygame.draw.rect(window, 'brown', (button_x - 40, button_exit_y + 55, button_width + 80, button_height + 5))
@@ -298,93 +298,115 @@ def Check_setting():
                         Flags_color = 'red'
                         mod_flag = True
 
-                if 350 <= mouse_x <= 640 and 240 <= mouse_y <= 280:
-                    if mod_eng:
-                        Eng_color = 'brown'
-                        mod_eng = False
+                if 430 <= mouse_x <= 640 and 240 <= mouse_y <= 280:
+                    if mod_towns:
+                        Town_color = 'brown'
+                        mod_towns = False
                     else:
-                        Eng_color = 'red'
-                        mod_eng = True
+                        Town_color = 'red'
+                        mod_towns = True
 
                 if 300 <= mouse_x <= 480 and 410 <= mouse_y <= 450:
-                    tip1 = []
-                    tip2 = []
+                    tip = ''
+                    if mod_towns and not mod_flag:
+                        tip = 'towns'
+                    if mod_flag and not mod_towns:
+                        tip = 'flag'
                     if Europe:
-                        tip1.append('Europe')
+                        if tip != '':
+                            Game_Europe(tip)
                     if America:
-                        tip1.append('America')
+                        if tip != '':
+                            Game_America(tip)
                     if Asia:
-                        tip1.append('Asia')
-                    if mod_eng:
-                        tip2.append('mod_eng')
-                    if mod_flag:
-                        tip2.append('mod_flag')
-                    Game(0, 0, tip1, tip2)
+                        if tip != '':
+                            Game_Asia(tip)
         pygame.display.flip()
 
 
-def Game(player_x, player_y, tip1, tip2):
+def Game_America(tip):
     pygame.display.set_caption('Игра')
+    window.blit(America_image, (0, 0))
 
-    cell_size = 40
-    line_width = 1
-    scaled_image = pygame.transform.scale(player_image, (cell_size, cell_size))
+    if tip == 'towns':
+        pass
+    if tip == 'flag':
+        pass
 
-    clock = pygame.time.Clock()
-    counter, text = 10, '10'.rjust(3)
-    pygame.time.set_timer(pygame.USEREVENT, 1500)
-
-    running = True
-    while running:
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                print(mouse_x, mouse_y)
-            if event.type == pygame.USEREVENT:
-                counter -= 1
-                if counter > 0:
-                    text = str(counter).rjust(3)
-                else:
-                    end(res_game='Game over')
+                print((mouse_x, mouse_y))
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w or event.key == pygame.K_UP:
-                    player_y -= cell_size
-                    if player_y < 0:
-                        player_y += cell_size
-                elif event.key == pygame.K_s or event.key == pygame.K_DOWN:
-                    player_y += cell_size
-                    if player_y >= window_height:
-                        player_y -= cell_size
-                elif event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                    player_x -= cell_size
-                    if player_x < 0:
-                        player_x += cell_size
-                elif event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                    player_x += cell_size
-                    if player_x >= window_width:
-                        player_x -= cell_size
-
-        window.fill('white')
-        pygame.draw.rect(window, 'red', (760, 560, 800, 600))
-
-        for y_ in range(0, window_height, cell_size):
-            for x_ in range(0, window_width, cell_size):
-                pygame.draw.rect(window, pygame.Color('black'),
-                                 (x_, y_, cell_size, cell_size), line_width)
-
-        if (player_x >= 0) and (player_x < window_width) and (player_y >= 0) and (player_y < window_height):
-            window.blit(scaled_image, (player_x, player_y))
-
-        pygame.draw.rect(window, 'grey', (720, 0, 800, 40))
-        window.blit(font.render(text, True, 'black'), (720, 10))
         pygame.display.flip()
-        clock.tick(30)
 
-        if player_x == 760 and player_y == 560:
-            end(res_game='Victory')
+
+def Game_Asia(tip):
+    pygame.display.set_caption('Игра')
+    window.blit(Asia_image, (0, 0))
+
+    if tip == 'towns':
+        pass
+    if tip == 'flag':
+        pass
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                print((mouse_x, mouse_y))
+
+        pygame.display.flip()
+
+
+def Game_Europe(tip):
+    pygame.display.set_caption('Игра')
+    window.blit(Europe_image, (0, 0))
+
+    if tip == 'towns':
+        town_color = 'brown'
+        pygame.draw.circle(window, town_color, (350, 464), 4)  # Рим
+        pygame.draw.circle(window, town_color, (359, 529), 4)  # Палермо
+        pygame.draw.circle(window, town_color, (355, 407), 4)  # Венеция
+        pygame.draw.circle(window, town_color, (542, 475), 4)  # Стамбул
+        pygame.draw.circle(window, town_color, (243, 296), 4)  # Лондон
+        pygame.draw.circle(window, town_color, (220, 453), 4)  # Барселона
+        pygame.draw.circle(window, town_color, (113, 491), 4)  # Севилья
+        pygame.draw.circle(window, town_color, (484, 527), 4)  # Афины
+        pygame.draw.circle(window, town_color, (407, 371), 4)  # Братислава
+        pygame.draw.circle(window, town_color, (381, 341), 4)  # Прага
+        pygame.draw.circle(window, town_color, (366, 248), 4)  # Копенгаген
+        pygame.draw.circle(window, town_color, (354, 188), 4)  # Осло
+        pygame.draw.circle(window, town_color, (474, 233), 4)  # Рига
+        pygame.draw.circle(window, town_color, (479, 196), 4)  # Таллин
+        pygame.draw.circle(window, town_color, (484, 266), 4)  # Вильнюс
+        pygame.draw.circle(window, town_color, (522, 183), 4)  # Санкт-Петербург
+        pygame.draw.circle(window, town_color, (430, 387), 4)  # Будапешт
+        pygame.draw.circle(window, town_color, (83, 456), 4)  # Лиссабон
+        pygame.draw.circle(window, town_color, (306, 379), 4)  # Берн
+        pygame.draw.circle(window, town_color, (286, 385), 4)  # Женева
+        pygame.draw.circle(window, town_color, (288, 293), 4)  # Амстердам
+    if tip == 'flag':
+        pass
+    pygame.display.flip()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                print((mouse_x, mouse_y))
+
+        pygame.display.flip()
 
 
 def end(res_game):
@@ -403,6 +425,7 @@ def end(res_game):
             if event.type == pygame.KEYDOWN:
                 Menu()
         pygame.display.flip()
+
 
 running = True
 Menu()
