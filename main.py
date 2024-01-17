@@ -38,7 +38,10 @@ towns_America = {'Вашингтон': '458, 254', 'Нью - Йорк': '472, 24
                  'Денвер': '310, 255', 'Монтерей': '343, 300', 'Сьюдад-Хуарес': '312, 281', 'Эрмосильо': '301, 295',
                  'Мерида': '398, 318', 'Белен': '592, 393', 'Сан-Луис': '613, 398'}
 
-towns_Asia = {'АБВГД': '100, 100'}
+towns_Asia = {'Стамбул': '28, 267', 'Анкара': '44, 279', 'Анталья': '38, 293', 'Трабзон': '82, 269',
+              'Тбилиси': '101, 265', 'Ереван': '106, 277', 'Баку': '128, 272', 'Дамаск': '70, 312', 'Алеппо': '72, 300',
+              'Мосул': '98, 301', 'Багдад': '103, 320', 'Кувейт': '117, 339', 'Медина': '81, 369', 'Мекка': '79, 386',
+              'Сана': '101, 425', 'Аден': '109, 439', 'Маскат': '171, 378', 'Абу-Даби': '148, 372'}
 
 
 # для загрузки файлов
@@ -109,9 +112,6 @@ def get_random_towns(tip):
         random_town = random.choice(list(towns_Asia))
         random_town_cords = towns_Asia[random_town]
         return random_town, random_town_cords
-
-
-get_random_towns('Europe')
 
 pygame.init()
 
@@ -377,25 +377,26 @@ def Check_setting():
                         mod_eng = True
 
                 if 300 <= mouse_x <= 480 and 410 <= mouse_y <= 450:
-                    if Europe and mod_towns:
+                    if Europe and mod_towns and not Asia and not America:
                         Game_Europe()
-                    if America and mod_towns:
+                    if America and mod_towns and not Asia and not Europe:
                         Game_America()
-                    if Asia and mod_towns:
+                    if Asia and mod_towns and not America and not Europe:
                         Game_Asia()
-                    tip1 = []
-                    tip2 = []
+                    tip1 = ''
+                    tip2 = ''
                     if Europe:
-                        tip1.append('Europe')
+                        tip1 = 'Europe'
                     if America:
-                        tip1.append('America')
+                        tip1 = 'America'
                     if Asia:
-                        tip1.append('Asia')
-                    if mod_eng:
-                        tip2.append('mod_eng')
-                    if mod_flag:
-                        tip2.append('mod_flag')
-                    Game(tip1, tip2)
+                        tip1 = 'Asia'
+                    if mod_eng and tip1 != '':
+                        tip2 = 'mod_eng'
+                        Game(tip1, tip2)
+                    if mod_flag and tip1 != '':
+                        tip2 = 'mod_flag'
+                        Game(tip1, tip2)
 
         pygame.display.flip()
 
@@ -597,7 +598,8 @@ def Game_Asia():
     pygame.draw.rect(window, 'grey', (560, 440, 230, 150))
 
     town_color = 'brown'
-    towns = [(0, 0)]
+    towns = [(28, 267), (44, 279), (38, 293), (82, 269), (101, 265), (106, 277), (128, 272), (70, 312), (72, 300),
+             (98, 301), (103, 320), (117, 339), (81, 369), (79, 386), (101, 425), (109, 439), (171, 378), (148, 372)]
     draw_all_towns(window, town_color, towns)
     pygame.display.flip()
 
