@@ -23,6 +23,9 @@ towns_europe = {'Рим': '350, 464', 'Палермо': '359, 529', 'Венец�
                 'Неаполь': '375, 485', 'Люксембург': '295, 335', 'Монако': '288, 430', 'Сан - Марино': '349, 433',
                 'Варна': '523, 454', 'Мурманск': '523, 51', 'Петрозаводск': '556, 156'}
 
+towns_America = {'АБВГД': '100, 100'}
+towns_Asia = {'АБВГД': '100, 100'}
+
 
 # для загрузки файлов
 def load_image(name, colorkey=None):
@@ -506,125 +509,23 @@ def Game(tip1, tip2):
         clock.tick(30)
 
 
+def draw_town(window, town_color, x, y):
+    pygame.draw.circle(window, town_color, (x, y), 4)
+
+def draw_all_towns(window, town_color, towns):
+    for town in towns:
+        draw_town(window, town_color, town[0], town[1])
+
 def Game_America():
+    kol = 0
     tip = 'America'
     pygame.display.set_caption('Игра')
     window.blit(America_image, (0, 0))
 
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                print((mouse_x, mouse_y))
-
-        pygame.display.flip()
-
-
-def Game_Asia():
-    tip = 'Asia'
-    pygame.display.set_caption('Игра')
-    window.blit(Asia_image, (0, 0))
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                print((mouse_x, mouse_y))
-
-        pygame.display.flip()
-
-
-def Game_Europe():
-    kol = 0
-    tip = 'Europe'
-    pygame.display.set_caption('Игра')
-    window.blit(Europe_image, (0, 0))
-
-    pygame.draw.rect(window, 'grey', (570, 440, 230, 150))
-
-    town_color = 'brown'
-    pygame.draw.circle(window, town_color, (350, 464), 4)  # Рим
-    pygame.draw.circle(window, town_color, (359, 529), 4)  # Палермо
-    pygame.draw.circle(window, town_color, (355, 407), 4)  # Венеция
-    pygame.draw.circle(window, town_color, (542, 475), 4)  # Стамбул
-    pygame.draw.circle(window, town_color, (243, 296), 4)  # Лондон
-    pygame.draw.circle(window, town_color, (220, 453), 4)  # Барселона
-    pygame.draw.circle(window, town_color, (113, 491), 4)  # Севилья
-    pygame.draw.circle(window, town_color, (484, 527), 4)  # Афины
-    pygame.draw.circle(window, town_color, (407, 371), 4)  # Братислава
-    pygame.draw.circle(window, town_color, (381, 341), 4)  # Прага
-    pygame.draw.circle(window, town_color, (366, 248), 4)  # Копенгаген
-    pygame.draw.circle(window, town_color, (354, 188), 4)  # Осло
-    pygame.draw.circle(window, town_color, (474, 233), 4)  # Рига
-    pygame.draw.circle(window, town_color, (479, 196), 4)  # Таллин
-    pygame.draw.circle(window, town_color, (484, 266), 4)  # Вильнюс
-    pygame.draw.circle(window, town_color, (522, 183), 4)  # Санкт-Петербург
-    pygame.draw.circle(window, town_color, (430, 387), 4)  # Будапешт
-    pygame.draw.circle(window, town_color, (83, 456), 4)  # Лиссабон
-    pygame.draw.circle(window, town_color, (306, 379), 4)  # Берн
-    pygame.draw.circle(window, town_color, (286, 385), 4)  # Женева
-    pygame.draw.circle(window, town_color, (288, 293), 4)  # Амстердам
-    pygame.draw.circle(window, town_color, (151, 456), 4)  # Мадрид
-    pygame.draw.circle(window, town_color, (258, 346), 4)  # Париж
-    pygame.draw.circle(window, town_color, (281, 318), 4)  # Брюссель
-    pygame.draw.circle(window, town_color, (365, 300), 4)  # Берлин
-    pygame.draw.circle(window, town_color, (437, 309), 4)  # Варшава
-    pygame.draw.circle(window, town_color, (137, 48), 4)  # Рейкьявик
-    pygame.draw.circle(window, town_color, (397, 373), 4)  # Вена
-    pygame.draw.circle(window, town_color, (379, 404), 4)  # Любляна
-    pygame.draw.circle(window, town_color, (188, 252), 4)  # Дублин
-    pygame.draw.circle(window, town_color, (632, 246), 4)  # Москва
-    pygame.draw.circle(window, town_color, (588, 98), 4)  # Архангельск
-    pygame.draw.circle(window, town_color, (513, 282), 4)  # Минск
-    pygame.draw.circle(window, town_color, (546, 325), 4)  # Киев
-    pygame.draw.circle(window, town_color, (412, 200), 4)  # Стокгольм
-    pygame.draw.circle(window, town_color, (482, 179), 4)  # Хельсинки
-    pygame.draw.circle(window, town_color, (589, 416), 4)  # Севастополь
-    pygame.draw.circle(window, town_color, (529, 382), 4)  # Кишнёв
-    pygame.draw.circle(window, town_color, (508, 426), 4)  # Бухарест
-    pygame.draw.circle(window, town_color, (477, 457), 4)  # София
-    pygame.draw.circle(window, town_color, (447, 430), 4)  # Белград
-    pygame.draw.circle(window, town_color, (455, 473), 4)  # Скопье
-    pygame.draw.circle(window, town_color, (435, 483), 4)  # Тирана
-    pygame.draw.circle(window, town_color, (438, 267), 4)  # Калининград
-    pygame.draw.circle(window, town_color, (428, 460), 4)  # Подгорица
-    pygame.draw.circle(window, town_color, (392, 406), 4)  # Загреб
-    pygame.draw.circle(window, town_color, (419, 439), 4)  # Сараево
-    pygame.draw.circle(window, town_color, (654, 409), 4)  # Сочи
-    pygame.draw.circle(window, town_color, (208, 392), 4)  # Бордо
-    pygame.draw.circle(window, town_color, (206, 281), 4)  # Кардиф
-    pygame.draw.circle(window, town_color, (229, 218), 4)  # Эдинбург
-    pygame.draw.circle(window, town_color, (113, 391), 4)  # Ла Корунья
-    pygame.draw.circle(window, town_color, (340, 283), 4)  # Гамбург
-    pygame.draw.circle(window, town_color, (316, 332), 4)  # Франкфурт
-    pygame.draw.circle(window, town_color, (347, 367), 4)  # Мюнхен
-    pygame.draw.circle(window, town_color, (403, 351), 4)  # Брно
-    pygame.draw.circle(window, town_color, (426, 276), 4)  # Данциг
-    pygame.draw.circle(window, town_color, (539, 212), 4)  # Великий Новгород
-    pygame.draw.circle(window, town_color, (644, 360), 4)  # Ростов на Дону
-    pygame.draw.circle(window, town_color, (101, 424), 4)  # Порту
-    pygame.draw.circle(window, town_color, (473, 309), 4)  # Брест
-    pygame.draw.circle(window, town_color, (485, 357), 4)  # Львов
-    pygame.draw.circle(window, town_color, (556, 387), 4)  # Одесса
-    pygame.draw.circle(window, town_color, (301, 410), 4)  # Турин
-    pygame.draw.circle(window, town_color, (323, 406), 4)  # Милан
-    pygame.draw.circle(window, town_color, (375, 485), 4)  # Неаполь
-    pygame.draw.circle(window, town_color, (295, 335), 4)  # Люксембург
-    pygame.draw.circle(window, town_color, (288, 430), 4)  # Монако
-    pygame.draw.circle(window, town_color, (349, 433), 4)  # Сан-Марино
-    pygame.draw.circle(window, town_color, (523, 454), 4)  # Варна
-    pygame.draw.circle(window, town_color, (523, 51), 4)  # Мурманск
-    pygame.draw.circle(window, town_color, (556, 156), 4)  # Петрозаводск
-    pygame.display.flip()
+    pygame.draw.rect(window, 'grey', (560, 440, 230, 150))
 
     used_towns = []
-    town_and_cords = get_random_towns('Europe')
+    town_and_cords = get_random_towns('America')
     cords = town_and_cords[1].split(', ')
     print(town_and_cords[0], town_and_cords[1][:3], town_and_cords[1][-3:])
 
@@ -640,14 +541,113 @@ def Game_Europe():
                     kol += 1
                     print(kol)
                     used_towns.append(town_and_cords[0])
+                    pygame.draw.circle(window, 'green', (int(cords[0]), int(cords[1])), 4)
+                town_and_cords = get_random_towns('America')
+                cords = town_and_cords[1].split(', ')
+                if town_and_cords[0] in used_towns:
+                    print(1)
+                    town_and_cords = get_random_towns('America')
+                print(town_and_cords[0], cords[0], cords[1])
+
+            pygame.draw.rect(window, 'grey', (560, 440, 230, 150))
+            text_town = font.render(town_and_cords[0], True, 'black')
+            window.blit(text_town, (560, 450))
+            text_kol = font.render(('Счёт:' + str(kol)), True, 'black')
+            window.blit(text_kol, (560, 500))
+        pygame.display.flip()
+
+
+def Game_Asia():
+    kol = 0
+    tip = 'Asia'
+    pygame.display.set_caption('Игра')
+    window.blit(Asia_image, (0, 0))
+
+    pygame.draw.rect(window, 'grey', (560, 440, 230, 150))
+
+    used_towns = []
+    town_and_cords = get_random_towns('Asia')
+    cords = town_and_cords[1].split(', ')
+    print(town_and_cords[0], town_and_cords[1][:3], town_and_cords[1][-3:])
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                print((mouse_x, mouse_y))
+                if abs(mouse_x - int(cords[0])) < 5 and abs(mouse_y - int(cords[1])) < 5:
+                    kol += 1
+                    print(kol)
+                    used_towns.append(town_and_cords[0])
+                    pygame.draw.circle(window, 'green', (int(cords[0]), int(cords[1])), 4)
+                town_and_cords = get_random_towns('Asia')
+                cords = town_and_cords[1].split(', ')
+                if town_and_cords[0] in used_towns:
+                    print(1)
+                    town_and_cords = get_random_towns('Asia')
+                print(town_and_cords[0], cords[0], cords[1])
+
+            pygame.draw.rect(window, 'grey', (560, 440, 230, 150))
+            text_town = font.render(town_and_cords[0], True, 'black')
+            window.blit(text_town, (560, 450))
+            text_kol = font.render(('Счёт:' + str(kol)), True, 'black')
+            window.blit(text_kol, (560, 500))
+        pygame.display.flip()
+
+
+def Game_Europe():
+    kol = 0
+    tip = 'Europe'
+    pygame.display.set_caption('Игра')
+    window.blit(Europe_image, (0, 0))
+
+    pygame.draw.rect(window, 'grey', (560, 440, 230, 150))
+
+    town_color = 'brown'
+    towns = [(350, 464), (359, 529), (355, 407), (542, 475), (243, 296), (220, 453), (113, 491), (484, 527), (407, 371),
+             (381, 341), (366, 248), (354, 188), (474, 233), (479, 196), (484, 266), (522, 183), (430, 387), (83, 456),
+             (306, 379), (286, 385), (288, 293), (151, 456), (258, 346), (281, 318), (365, 300), (437, 309), (137, 48),
+             (397, 373), (379, 404), (188, 252), (632, 246), (588, 98), (513, 282), (546, 325), (412, 200), (482, 179),
+             (589, 416), (529, 382), (508, 426), (477, 457), (447, 430), (455, 473), (435, 483), (438, 267), (428, 460),
+             (392, 406), (419, 439), (654, 409), (208, 392), (206, 281), (229, 218), (113, 391), (340, 283), (316, 332),
+             (347, 367), (403, 351), (426, 276), (539, 212), (644, 360), (101, 424), (473, 309), (485, 357), (556, 387),
+             (301, 410), (323, 406), (375, 485), (295, 335), (288, 430), (349, 433), (523, 454), (523, 51), (556, 156)]
+    draw_all_towns(window, town_color, towns)
+    pygame.display.flip()
+
+    used_towns = []
+    town_and_cords = get_random_towns('Europe')
+    cords = town_and_cords[1].split(', ')
+    print(town_and_cords[0])
+    text_town = font.render(town_and_cords[0], True, 'black')
+    window.blit(text_town, (560, 450))
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                if abs(mouse_x - int(cords[0])) < 5 and abs(mouse_y - int(cords[1])) < 5:
+                    kol += 1
+                    print(kol)
+                    used_towns.append(town_and_cords[0])
                     pygame.draw.circle(window,'green', (int(cords[0]), int(cords[1])), 4)
                 town_and_cords = get_random_towns('Europe')
                 cords = town_and_cords[1].split(', ')
                 if town_and_cords[0] in used_towns:
                     print(1)
                     town_and_cords = get_random_towns('Europe')
-                print(town_and_cords[0], cords[0], cords[1])
-
+                print(town_and_cords[0])
+            pygame.draw.rect(window, 'grey', (560, 440, 230, 150))
+            text_town = font.render(town_and_cords[0], True, 'black')
+            window.blit(text_town, (560, 450))
+            text_kol = font.render(('Счёт:' + str(kol)), True, 'black')
+            window.blit(text_kol, (560, 500))
         pygame.display.flip()
 
 
