@@ -23,7 +23,21 @@ towns_europe = {'Рим': '350, 464', 'Палермо': '359, 529', 'Венец�
                 'Неаполь': '375, 485', 'Люксембург': '295, 335', 'Монако': '288, 430', 'Сан - Марино': '349, 433',
                 'Варна': '523, 454', 'Мурманск': '523, 51', 'Петрозаводск': '556, 156'}
 
-towns_America = {'АБВГД': '100, 100'}
+towns_America = {'Вашингтон': '458, 254', 'Нью - Йорк': '472, 246', 'Бостон': '487, 239', 'Майами': '437, 302',
+                 'Новый Орлеан': '393, 289', 'Гавана': '432, 312', 'Лос-Анджелес': '253, 272',
+                 'Сан-Франциско': '241, 259', 'Ванкувер': '235, 212', 'Галифакс': '520, 232', 'Квебек': '489, 220',
+                 'Торонто': '444, 235', 'Виннипег': '356, 208', 'Даллас': '352, 277', 'Канзас-Сити': '372, 256',
+                 'Анкоридж': '108, 158', 'Сиэтл': '239, 221', 'Хьюстон': '362, 292', 'Гуантанамо': '460, 322',
+                 'Санто-Доминго': '487, 326', 'Кингстон': '454, 328', 'Джексонвилл': '432, 281', 'Шарлотт': '436, 266',
+                 'Атланта': '419, 274', 'Гуаякиль': '445, 395', 'Богота': '464, 366', 'Каракас': '501, 353',
+                 'Джорджтаун': '545, 368', 'Парамарибо': '557, 370', 'Панама': '444, 357', 'Гватемала': '391, 337',
+                 'Манагуа': '412, 348', 'Сан-Хосе': '423, 355', 'Кито': '449, 385', 'Лима': '459, 428',
+                 'Ла-Пас': '498, 436', 'Асуньсьон': '548, 468', 'Буэнос-Айрес': '548, 504', 'Монтевидео': '555, 501',
+                 'Антофагаста': '489, 464', 'Сантьяго': '486, 500', 'Кордова': '509, 499', 'Нуук': '578, 143',
+                 'Оттава': '472, 228', 'Мехико': '345, 320', 'Лас-Вегас': '265, 259', 'Солт-Лейк-Сити': '273, 247',
+                 'Денвер': '310, 255', 'Монтерей': '343, 300', 'Сьюдад-Хуарес': '312, 281', 'Эрмосильо': '301, 295',
+                 'Мерида': '398, 318', 'Белен': '592, 393', 'Сан-Луис': '613, 398'}
+
 towns_Asia = {'АБВГД': '100, 100'}
 
 
@@ -86,6 +100,14 @@ def get_random_towns(tip):
     if tip == 'Europe':
         random_town = random.choice(list(towns_europe))
         random_town_cords = towns_europe[random_town]
+        return random_town, random_town_cords
+    if tip == 'America':
+        random_town = random.choice(list(towns_America))
+        random_town_cords = towns_America[random_town]
+        return random_town, random_town_cords
+    if tip == 'Asia':
+        random_town = random.choice(list(towns_Asia))
+        random_town_cords = towns_Asia[random_town]
         return random_town, random_town_cords
 
 
@@ -512,9 +534,11 @@ def Game(tip1, tip2):
 def draw_town(window, town_color, x, y):
     pygame.draw.circle(window, town_color, (x, y), 4)
 
+
 def draw_all_towns(window, town_color, towns):
     for town in towns:
         draw_town(window, town_color, town[0], town[1])
+
 
 def Game_America():
     kol = 0
@@ -524,10 +548,19 @@ def Game_America():
 
     pygame.draw.rect(window, 'grey', (560, 440, 230, 150))
 
+    town_color = 'brown'
+    towns = [(458, 254), (472, 246), (487, 239), (437, 302), (393, 289), (432, 312), (253, 272), (241, 259), (235, 212),
+             (520, 232), (489, 220), (444, 235), (356, 208), (352, 277), (372, 256), (108, 158), (239, 221), (362, 292),
+             (460, 322), (487, 326), (454, 328), (432, 281), (436, 266), (419, 274), (445, 395), (464, 366), (501, 353),
+             (545, 368), (557, 370), (444, 357), (391, 337), (412, 348), (423, 355), (449, 385), (459, 428), (498, 436),
+             (548, 468), (548, 504), (555, 501), (489, 464), (486, 500), (509, 499), (578, 143), (472, 228), (345, 320),
+             (265, 259), (273, 247), (310, 255), (343, 300), (312, 281), (301, 295), (398, 318), (592, 393), (613, 398)]
+    draw_all_towns(window, town_color, towns)
+    pygame.display.flip()
+
     used_towns = []
     town_and_cords = get_random_towns('America')
     cords = town_and_cords[1].split(', ')
-    print(town_and_cords[0], town_and_cords[1][:3], town_and_cords[1][-3:])
 
     while True:
         for event in pygame.event.get():
@@ -539,15 +572,13 @@ def Game_America():
                 print((mouse_x, mouse_y))
                 if abs(mouse_x - int(cords[0])) < 5 and abs(mouse_y - int(cords[1])) < 5:
                     kol += 1
-                    print(kol)
                     used_towns.append(town_and_cords[0])
                     pygame.draw.circle(window, 'green', (int(cords[0]), int(cords[1])), 4)
                 town_and_cords = get_random_towns('America')
                 cords = town_and_cords[1].split(', ')
                 if town_and_cords[0] in used_towns:
-                    print(1)
                     town_and_cords = get_random_towns('America')
-                print(town_and_cords[0], cords[0], cords[1])
+                    cords = town_and_cords[1].split(', ')
 
             pygame.draw.rect(window, 'grey', (560, 440, 230, 150))
             text_town = font.render(town_and_cords[0], True, 'black')
@@ -565,6 +596,11 @@ def Game_Asia():
 
     pygame.draw.rect(window, 'grey', (560, 440, 230, 150))
 
+    town_color = 'brown'
+    towns = [(0, 0)]
+    draw_all_towns(window, town_color, towns)
+    pygame.display.flip()
+
     used_towns = []
     town_and_cords = get_random_towns('Asia')
     cords = town_and_cords[1].split(', ')
@@ -580,15 +616,13 @@ def Game_Asia():
                 print((mouse_x, mouse_y))
                 if abs(mouse_x - int(cords[0])) < 5 and abs(mouse_y - int(cords[1])) < 5:
                     kol += 1
-                    print(kol)
                     used_towns.append(town_and_cords[0])
                     pygame.draw.circle(window, 'green', (int(cords[0]), int(cords[1])), 4)
                 town_and_cords = get_random_towns('Asia')
                 cords = town_and_cords[1].split(', ')
                 if town_and_cords[0] in used_towns:
-                    print(1)
                     town_and_cords = get_random_towns('Asia')
-                print(town_and_cords[0], cords[0], cords[1])
+                    cords = town_and_cords[1].split(', ')
 
             pygame.draw.rect(window, 'grey', (560, 440, 230, 150))
             text_town = font.render(town_and_cords[0], True, 'black')
@@ -621,7 +655,6 @@ def Game_Europe():
     used_towns = []
     town_and_cords = get_random_towns('Europe')
     cords = town_and_cords[1].split(', ')
-    print(town_and_cords[0])
     text_town = font.render(town_and_cords[0], True, 'black')
     window.blit(text_town, (560, 450))
 
@@ -634,15 +667,13 @@ def Game_Europe():
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if abs(mouse_x - int(cords[0])) < 5 and abs(mouse_y - int(cords[1])) < 5:
                     kol += 1
-                    print(kol)
                     used_towns.append(town_and_cords[0])
                     pygame.draw.circle(window,'green', (int(cords[0]), int(cords[1])), 4)
                 town_and_cords = get_random_towns('Europe')
                 cords = town_and_cords[1].split(', ')
                 if town_and_cords[0] in used_towns:
-                    print(1)
                     town_and_cords = get_random_towns('Europe')
-                print(town_and_cords[0])
+                    cords = town_and_cords[1].split(', ')
             pygame.draw.rect(window, 'grey', (560, 440, 230, 150))
             text_town = font.render(town_and_cords[0], True, 'black')
             window.blit(text_town, (560, 450))
@@ -653,7 +684,7 @@ def Game_Europe():
 
 def end(res_game):
     pygame.display.set_caption('Конец игры')
-    window.blit(first_image, (0, 0))
+    window.fill('white', (0, 0, window_width, window_height))
     text_res = font1.render(res_game, True, 'Brown')
     window.blit(text_res, (320, 100))
     text_go = font.render('Для продолжения нажмите на любую клавишу', True, 'Brown')
