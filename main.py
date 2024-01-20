@@ -165,8 +165,8 @@ input_width = window_width * 0.2
 input1_width = (window_width - input_width) // 2
 input_height = window_height * 0.4
 
-start_image = pygame.transform.scale(load_image('start_image.jpg'), window_size)
-first_image = pygame.transform.scale(load_image('first_image.webp'), window_size)
+start_image = pygame.transform.scale(load_image('start_image.png'), window_size)
+first_image = pygame.transform.scale(load_image('first_image.png'), window_size)
 America_image = pygame.transform.scale(load_image('America.jpg'), window_size)
 Europe_image = pygame.transform.scale(load_image('Europe.jpg'), window_size)
 Asia_image = pygame.transform.scale(load_image('Asia.jpg'), window_size)
