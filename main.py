@@ -1,12 +1,18 @@
 import sqlite3
 import random
-import sys
 import pygame
 import os
 
 
+# Логин игрока
+LOGIN = ''
+
 # количество раундов
 N = 10
+
+# Подключение к базе данных
+conn = sqlite3.connect('comandproject.db')
+cursor = conn.cursor()
 
 # словари со странами
 America = {'США': 'USA', 'Канада': 'Canada', 'Мексика': 'Mexico', 'Куба': 'Cuba'}
@@ -71,6 +77,7 @@ towns_Asia = {'Стамбул': '28, 267', 'Анкара': '44, 279', 'Анта�
               'Саппоро': '566, 256', 'Цзинань': '444, 296'}
 
 
+# написание текста
 def print_text(message, x, y, color='white', font_size=38):
     font = pygame.font.Font(None, font_size)
     text = font.render(message, True, color)
@@ -85,7 +92,9 @@ def load_image(name, colorkey=None):
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         pygame.quit()
+        quit()
 
+    # загружаем картинку
     image = pygame.image.load(fullname)
 
     # для прозрачности изображения
@@ -118,7 +127,7 @@ def get_random_country_eng(type):
             random_country_eng = Asia[random_country_rus]
         else:
             random_country_eng = America[random_country_rus]
-        # и ещё 3 страны для вариантов выбора
+        # и ещё 3 страны для вариантов ответа
         new_random_countries_rus = random.sample(list(Europe.keys()) + list(Asia.keys()) + list(America.keys()), k=3)
         while random_country_rus in new_random_countries_rus:
             new_random_countries_rus = random.sample(list(Europe.keys()) + list(Asia.keys()) + list(America.keys()),
@@ -145,6 +154,7 @@ def get_random_towns(type):
     return random_town, random_town_cords
 
 
+# инициализация игры
 pygame.init()
 
 window_size = window_width, window_height = 800, 600
@@ -167,11 +177,12 @@ input_height = window_height * 0.4
 
 start_image = pygame.transform.scale(load_image('start_image.png'), window_size)
 first_image = pygame.transform.scale(load_image('first_image.png'), window_size)
-America_image = pygame.transform.scale(load_image('America.jpg'), window_size)
-Europe_image = pygame.transform.scale(load_image('Europe.jpg'), window_size)
-Asia_image = pygame.transform.scale(load_image('Asia.jpg'), window_size)
+America_image = pygame.transform.scale(load_image('town/America.jpg'), window_size)
+Europe_image = pygame.transform.scale(load_image('town/Europe.jpg'), window_size)
+Asia_image = pygame.transform.scale(load_image('town/Asia.jpg'), window_size)
 
 
+# начальное меню
 def Menu():
     pygame.display.set_caption("Меню")
     window.blit(start_image, (0, 0))
@@ -195,6 +206,7 @@ def Menu():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                quit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
@@ -204,44 +216,41 @@ def Menu():
                     Rating()
                 elif button_exit.collidepoint(mouse_pos):
                     pygame.quit()
+                    quit()
 
         pygame.display.flip()
 
 
+# окно начала с выбором режима входа
 def Start():
     pygame.display.set_caption("Инициализация")
     window.blit(first_image, (0, 0))
 
-    button_enter = pygame.Rect(log_width - 185, log_height + 100, log_width / 2 - 35, log_height - 50)
+    button_enter = pygame.Rect(button_x - 120, button_start_y, button_width + 30, button_height + 10)
     pygame.draw.rect(window, 'brown', button_enter)
 
-    text_enter = font.render('Вход', True, 'white')
-    window.blit(text_enter, (log_width - 135, log_height + 110, log_width - 15, log_height - 50))
+    print_text("Вход", button_x + button_width // 2 - 140, button_start_y + button_height // 2 - 10)
 
-    button_register = pygame.Rect(log_width + 30, log_height + 100, log_width / 2 - 20, log_height - 50)
+    button_register = pygame.Rect(button_x + 70, button_start_y, button_width + 100, button_height + 10)
     pygame.draw.rect(window, 'brown', button_register)
 
-    text_reg = font.render('Регистрация', True, 'white')
-    window.blit(text_reg, (log_width + 35, log_height + 110, log_width, log_height - 50))
+    print_text("Регистрация", button_x + button_width // 2 + 38, button_start_y + button_height // 2 - 10)
 
     button_next = pygame.Rect(button_x - 40, button_exit_y - 5, button_width + 80, button_height + 5)
     pygame.draw.rect(window, 'brown', button_next)
 
-    text_continue = font.render("Продолжить", True, 'white')
-    window.blit(text_continue, (button_x + button_width // 2 - text_continue.get_width() // 2,
-                                button_exit_y + button_height // 2 - text_continue.get_height() // 2))
+    print_text("Продолжить", button_x - button_width // 2 + 15, button_exit_y + button_height // 2 - 15)
 
     button_back = pygame.Rect(button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5)
     pygame.draw.rect(window, 'brown', button_back)
 
-    text_back = font.render("Назад", True, 'white')
-    window.blit(text_back, (button_x + button_width // 2 - text_back.get_width() // 2,
-                            button_exit_y + button_height // 2 - text_back.get_height() // 2 + 70))
+    print_text("Назад", button_x + button_width // 2 - 45, button_exit_y + button_height // 2 + 55)
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                quit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
@@ -261,41 +270,39 @@ def Start():
         pygame.display.flip()
 
 
+# регистрация
 def Register():
+    global LOGIN
     pygame.display.set_caption("Регистрация")
     window.blit(first_image, (0, 0))
 
-    button_login = pygame.Rect(log_width - 150, log_height, log_width / 2 + 100, log_height - 50)
+    button_login = pygame.Rect(button_x - 100, button_start_y - 50, button_width + 200, button_height + 15)
     pygame.draw.rect(window, 'brown', button_login)
 
-    text_login = font.render('Введите логин', True, 'dark grey')
-    window.blit(text_login, (log_width - 135, log_height + 10, log_width + 15, log_height - 100))
+    print_text("Введите логин", button_x - button_width // 2 - 35, button_start_y + button_height // 2 - 55,
+               color="dark grey", font_size=40)
 
-    button_password = pygame.Rect(log_width - 150, log_height + 100, log_width / 2 + 100, log_height - 50)
+    button_password = pygame.Rect(button_x - 100, button_start_y + 20, button_width + 200, button_height + 15)
     pygame.draw.rect(window, 'brown', button_password)
 
-    text_password = font.render("Введите пароль", True, 'dark grey')
-    window.blit(text_password, (log_width - 135, log_height + 110, log_width + 15, log_height - 100))
+    print_text("Введите пароль", button_x - button_width // 2 - 35, button_start_y + button_height // 2 + 15,
+               color="dark grey", font_size=40)
 
     button_next = pygame.Rect(button_x - 40, button_exit_y - 5, button_width + 80, button_height + 5)
     pygame.draw.rect(window, 'brown', button_next)
 
-    text_continue = font.render("Продолжить", True, 'white')
-    window.blit(text_continue, (button_x + button_width // 2 - text_continue.get_width() // 2,
-                                button_exit_y + button_height // 2 - text_continue.get_height() // 2))
+    print_text("Продолжить", button_x - button_width // 2 + 15, button_exit_y + button_height // 2 - 15)
 
     button_back = pygame.Rect(button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5)
     pygame.draw.rect(window, 'brown', button_back)
 
-    text_back = font.render("Назад", True, 'white')
-    window.blit(text_back, (button_x + button_width // 2 - text_back.get_width() // 2,
-                            button_exit_y + button_height // 2 - text_back.get_height() // 2 + 70))
+    print_text("Назад", button_x + button_width // 2 - 45, button_exit_y + button_height // 2 + 55)
 
-    button_enter = pygame.Rect(button_x - 250, button_exit_y - 320, button_width + 500, button_height + 10)
+    button_enter = pygame.Rect(button_x - 250, button_start_y - 165, button_width + 500, button_height + 10)
     pygame.draw.rect(window, 'white', button_enter)
 
-    text_enter = font.render("Введите Логин и Пароль", True, 'red')
-    window.blit(text_enter, (window_width // 2 - text_enter.get_width() // 2, 50))
+    print_text("Введите Логин и Пароль", window_width // 2 - 160, button_start_y - 150,
+               color='red')
 
     login = '|'
     password = '|'
@@ -307,9 +314,9 @@ def Register():
 
     while True:
         for event in pygame.event.get():
-
             if event.type == pygame.QUIT:
                 pygame.quit()
+                quit()
 
             if event.type == pygame.KEYDOWN:
                 tick = 1000
@@ -349,59 +356,48 @@ def Register():
                     need_input_password = True
                     need_input_login = False
 
-                if button_password.collidepoint(mouse_pos):
-                    need_input_password = True
-                    need_input_login = False
-
                 if button_next.collidepoint(mouse_pos):
-                    # Check_setting()
+                    text = ''
+
                     need_input_login = False
                     need_input_password = False
+
                     login = login.replace('|', '')
                     password = password.replace('|', '')
+
                     if login != '' and password != '':
                         try:
-                            # Подключение к базе данных
-                            conn = sqlite3.connect("comandproject.db")
-                            cursor = conn.cursor()
-
                             # Проверка наличия логина в базе данных
                             cursor.execute("SELECT login FROM setting WHERE login=?", (login,))
                             result = cursor.fetchone()
                             # Если логина нет, добавляем его в базу данных
-                            if login != '':
-                                if result is None:
-                                    if password is not None:
-                                        cursor.execute("INSERT INTO setting (login, password, mod_eng,"
-                                                       " mod_flag, mod_town) VALUES (?, ?, '', '', '')",
-                                                       (login, password))
-                                        conn.commit()
-                                        text_enter = font.render("Успешно! Нажмите Продолжить!",
-                                                                 True, 'red')
-                                    else:
-                                        text_enter = font.render("Ошибка! Введите что-то в строку пароль!", True, 'red')
+                            if result is None:
+                                if password is not None:
+                                    cursor.execute("INSERT INTO setting (login, password, mod_eng," 
+                                                   " mod_flag, mod_town) VALUES (?, ?, '', '', '')", (login, password))
+                                    conn.commit()
+                                    text = "Успешно!"
+                                    LOGIN = login
+                                    Check_setting()
                                 else:
-                                    text_enter = font.render("Ошибка! Такой логин уже существует", True, 'red')
+                                    text = "Ошибка! Введите что-то в строку пароль!"
                             else:
-                                text_enter = font.render("Ошибка! Поле с Логином не должно быть пустым", True, 'red')
-                            pygame.draw.rect(window, 'white', button_enter)
-                            window.blit(text_enter, (window_width // 2 - text_enter.get_width() // 2, 50))
+                                text = "Ошибка! Такой логин уже существует"
 
                             # Закрытие соединения с базой данных
                             conn.close()
 
                         except sqlite3.Error:
-                            pygame.draw.rect(window, 'white', button_enter)
-                            text_enter = font.render("Ошибка! Что-то не так! Попробуйте снова!", True, 'red')
-                            window.blit(text_enter, (window_width // 2 - text_enter.get_width() // 2, 50))
+                            text = "Ошибка! Попробуйте снова!"
 
                     else:
-                        text_enter = font.render("Ошибка! Пожалуйста введите логин и пароль", True, 'red')
-                        pygame.draw.rect(window, 'white', button_enter)
-                        window.blit(text_enter, (window_width // 2 - text_enter.get_width() // 2, 50))
+                        text = "Ошибка! Введите логин и пароль"
+
+                    pygame.draw.rect(window, 'white', button_enter)
+                    print_text(text, window_width // 2 - 210, button_start_y - 150, color='red')
 
                 if button_back.collidepoint(mouse_pos):
-                    Menu()
+                    Start()
 
         tick -= 1
         if tick == 0:
@@ -414,60 +410,60 @@ def Register():
 
         if need_input_login:
             pygame.draw.rect(window, 'brown', button_login)
-            text_login = font.render(login, True, 'white')
-            window.blit(text_login, (log_width - 135, log_height + 10, log_width + 15, log_height - 100))
+            print_text(login, button_x - button_width // 2 - 35, button_start_y + button_height // 2 - 55, font_size=40)
+
         elif login == '' and not need_input_login:
             pygame.draw.rect(window, 'brown', button_login)
-            text_login = font.render('Введите логин', True, 'dark grey')
-            window.blit(text_login, (log_width - 135, log_height + 10, log_width + 15, log_height - 100))
+            print_text("Введите логин", button_x - button_width // 2 - 35, button_start_y + button_height // 2 - 55,
+                       color="dark grey", font_size=40)
 
         if need_input_password:
             pygame.draw.rect(window, 'brown', button_password)
-            text_password = font.render(password, True, 'white')
-            window.blit(text_password, (log_width - 135, log_height + 110, log_width + 15, log_height - 100))
+            print_text(password, button_x - button_width // 2 - 35, button_start_y + button_height // 2 + 15,
+                       font_size=40)
+
         elif password == '' and not need_input_password:
             pygame.draw.rect(window, 'brown', button_password)
-            text_password = font.render("Введите пароль", True, 'dark grey')
-            window.blit(text_password, (log_width - 135, log_height + 110, log_width + 15, log_height - 100))
+            print_text("Введите пароль", button_x - button_width // 2 - 35, button_start_y + button_height // 2 + 15,
+                       color="dark grey", font_size=40)
 
         pygame.display.flip()
 
 
+# вход
 def Enter():
+    global LOGIN
+
     pygame.display.set_caption("Вход")
     window.blit(first_image, (0, 0))
 
-    button_login = pygame.Rect(log_width - 150, log_height, log_width / 2 + 100, log_height - 50)
+    button_login = pygame.Rect(button_x - 100, button_start_y - 50, button_width + 200, button_height + 15)
     pygame.draw.rect(window, 'brown', button_login)
 
-    text_login = font.render('Введите логин', True, 'dark grey')
-    window.blit(text_login, (log_width - 135, log_height + 10, log_width + 15, log_height - 100))
+    print_text("Введите логин", button_x - button_width // 2 - 35, button_start_y + button_height // 2 - 55,
+               color="dark grey", font_size=40)
 
-    button_password = pygame.Rect(log_width - 150, log_height + 100, log_width / 2 + 100, log_height - 50)
+    button_password = pygame.Rect(button_x - 100, button_start_y + 20, button_width + 200, button_height + 15)
     pygame.draw.rect(window, 'brown', button_password)
 
-    text_password = font.render("Введите пароль", True, 'dark grey')
-    window.blit(text_password, (log_width - 135, log_height + 110, log_width + 15, log_height - 100))
+    print_text("Введите пароль", button_x - button_width // 2 - 35, button_start_y + button_height // 2 + 15,
+               color="dark grey", font_size=40)
 
     button_next = pygame.Rect(button_x - 40, button_exit_y - 5, button_width + 80, button_height + 5)
     pygame.draw.rect(window, 'brown', button_next)
 
-    text_continue = font.render("Продолжить", True, 'white')
-    window.blit(text_continue, (button_x + button_width // 2 - text_continue.get_width() // 2,
-                                button_exit_y + button_height // 2 - text_continue.get_height() // 2))
+    print_text("Продолжить", button_x - button_width // 2 + 15, button_exit_y + button_height // 2 - 15)
 
     button_back = pygame.Rect(button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5)
     pygame.draw.rect(window, 'brown', button_back)
 
-    text_back = font.render("Назад", True, 'white')
-    window.blit(text_back, (button_x + button_width // 2 - text_back.get_width() // 2,
-                            button_exit_y + button_height // 2 - text_back.get_height() // 2 + 70))
+    print_text("Назад", button_x + button_width // 2 - 45, button_exit_y + button_height // 2 + 55)
 
-    button_enter = pygame.Rect(button_x - 250, button_exit_y - 320, button_width + 500, button_height + 10)
+    button_enter = pygame.Rect(button_x - 250, button_start_y - 165, button_width + 500, button_height + 10)
     pygame.draw.rect(window, 'white', button_enter)
 
-    text_enter = font.render("Введите Логин и Пароль", True, 'red')
-    window.blit(text_enter, (window_width // 2 - text_enter.get_width() // 2, 50))
+    print_text("Введите Логин и Пароль", window_width // 2 - 160, button_start_y - 150,
+               color='red')
 
     login = '|'
     password = '|'
@@ -479,9 +475,9 @@ def Enter():
 
     while True:
         for event in pygame.event.get():
-
             if event.type == pygame.QUIT:
                 pygame.quit()
+                quit()
 
             if event.type == pygame.KEYDOWN:
                 tick = 1000
@@ -521,51 +517,45 @@ def Enter():
                     need_input_password = True
                     need_input_login = False
 
-                if button_password.collidepoint(mouse_pos):
-                    need_input_password = True
-                    need_input_login = False
-
                 if button_next.collidepoint(mouse_pos):
-                    # Check_setting()
+                    text = ''
+
                     need_input_login = False
                     need_input_password = False
+
                     login = login.replace('|', '')
                     password = password.replace('|', '')
+
                     if login != '' and password != '':
                         try:
-                            # Подключение к базе данных
-                            conn = sqlite3.connect("comandproject.db")
-                            cursor = conn.cursor()
-
                             # Проверка наличия логина в базе данных
                             cursor.execute("SELECT password FROM setting WHERE login=?", (login,))
                             result = cursor.fetchone()
                             # Если логина нет, добавляем его в базу данных
                             if result is not None:
                                 if result[0] == password:
-                                    text_enter = font.render("Успешно! Нажмите Продолжить!", True, 'red')
+                                    text = "Успешно!"
+                                    LOGIN = login
+                                    Check_setting()
                                 else:
-                                    text_enter = font.render("Ошибка! Неправильный пароль", True, 'red')
+                                    text = "Ошибка! Неправильный пароль!"
                             else:
-                                text_enter = font.render("Ошибка! Логин не найден", True, 'red')
-                            pygame.draw.rect(window, 'white', button_enter)
-                            window.blit(text_enter, (window_width // 2 - text_enter.get_width() // 2, 50))
+                                text = "Ошибка! Логин не найден"
 
                             # Закрытие соединения с базой данных
                             conn.close()
 
                         except sqlite3.Error:
-                            pygame.draw.rect(window, 'white', button_enter)
-                            text_enter = font.render("Ошибка! Что-то не так! Попробуйте снова!", True, 'red')
-                            window.blit(text_enter, (window_width // 2 - text_enter.get_width() // 2, 50))
+                            text = "Ошибка! Попробуйте снова!"
 
                     else:
-                        text_enter = font.render("Ошибка! Пожалуйста введите логин и пароль", True, 'red')
-                        pygame.draw.rect(window, 'white', button_enter)
-                        window.blit(text_enter, (window_width // 2 - text_enter.get_width() // 2, 50))
+                        text = "Ошибка! Введите логин и пароль"
+
+                    pygame.draw.rect(window, 'white', button_enter)
+                    print_text(text, window_width // 2 - 200, button_start_y - 150, color='red')
 
                 if button_back.collidepoint(mouse_pos):
-                    Menu()
+                    Start()
 
         tick -= 1
         if tick == 0:
@@ -578,43 +568,67 @@ def Enter():
 
         if need_input_login:
             pygame.draw.rect(window, 'brown', button_login)
-            text_login = font.render(login, True, 'white')
-            window.blit(text_login, (log_width - 135, log_height + 10, log_width + 15, log_height - 100))
+            print_text(login, button_x - button_width // 2 - 35, button_start_y + button_height // 2 - 55, font_size=40)
+
         elif login == '' and not need_input_login:
             pygame.draw.rect(window, 'brown', button_login)
-            text_login = font.render('Введите логин', True, 'dark grey')
-            window.blit(text_login, (log_width - 135, log_height + 10, log_width + 15, log_height - 100))
+            print_text("Введите логин", button_x - button_width // 2 - 35, button_start_y + button_height // 2 - 55,
+                       color="dark grey", font_size=40)
 
         if need_input_password:
             pygame.draw.rect(window, 'brown', button_password)
-            text_password = font.render(password, True, 'white')
-            window.blit(text_password, (log_width - 135, log_height + 110, log_width + 15, log_height - 100))
+            print_text(password, button_x - button_width // 2 - 35, button_start_y + button_height // 2 + 15,
+                       font_size=40)
+
         elif password == '' and not need_input_password:
             pygame.draw.rect(window, 'brown', button_password)
-            text_password = font.render("Введите пароль", True, 'dark grey')
-            window.blit(text_password, (log_width - 135, log_height + 110, log_width + 15, log_height - 100))
+            print_text("Введите пароль", button_x - button_width // 2 - 35, button_start_y + button_height // 2 + 15,
+                       color="dark grey", font_size=40)
 
         pygame.display.flip()
 
 
+# функция написания рейтинга для нужного мода
+def print_rating(name, mode, x, y):
+    cursor.execute(f"SELECT login, {mode} FROM setting ORDER BY {mode} DESC LIMIT 5")
+    rows = cursor.fetchall()
+
+    header = f"{name.capitalize()}"
+    print_text(header, x, y, color='brown')
+
+    row_y = 50
+    for row in rows:
+        login, percentage = row
+        if not percentage:
+            percentage = 0
+        print_text(f'{login[:6]} - {percentage}%', x, y + row_y, color='red')
+        row_y += 50
+
+
+# рейтинг
 def Rating():
     pygame.display.set_caption("Рейтинг")
     window.blit(first_image, (0, 0))
 
-    text_check = font.render('Рекорды', True, 'Brown')
-    window.blit(text_check, (350, 60, 400, 80))
+    button_enter = pygame.Rect(button_x - 250, button_start_y - 165, button_width + 500, button_height + 350)
+    pygame.draw.rect(window, 'white', button_enter)
+
+    print_text("Рекорды", window_width // 2 - 65, button_start_y - 150, color='red')
 
     button_back = pygame.Rect(button_x - 40, button_exit_y + 125, button_width + 80, button_height + 5)
     pygame.draw.rect(window, 'brown', button_back)
 
-    text_back = font.render("Назад", True, 'white')
-    window.blit(text_back, (button_x + button_width // 2 - text_back.get_width() // 2,
-                            button_exit_y + button_height // 2 - text_back.get_height() // 2 + 130))
+    print_text("Назад", button_x + button_width // 2 - 45, button_exit_y + button_height // 2 + 115)
+
+    print_rating('Eng', 'mod_eng', 110, 100)
+    print_rating('Flag', 'mod_flag', 310, 100)
+    print_rating('Town', 'mod_town', 510, 100)
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                quit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
@@ -624,6 +638,7 @@ def Rating():
         pygame.display.flip()
 
 
+# выбор режима игры
 def Check_setting():
     # Флаги Настроек Стран
     Europe = False
@@ -649,71 +664,57 @@ def Check_setting():
     pygame.display.set_caption("Выбор Режима")
     window.blit(first_image, (0, 0))
 
-    # Отображение текста "Выберите режим"
-    text_check = font.render('Выберите режим', True, 'Brown')
-    window.blit(text_check, (310, 60, 400, 80))
+    button_enter = pygame.Rect(button_x - 250, button_start_y - 165, button_width + 500, button_height + 10)
+    pygame.draw.rect(window, 'white', button_enter)
+
+    print_text("Выберите режим", window_width // 2 - 100, button_start_y - 150, color='brown')
 
     while True:
         # Отображение кнопок
         button_Europe = pygame.Rect(button_x - 250, button_exit_y - 220, button_width + 80, button_height + 5)
         pygame.draw.rect(window, Europe_color, button_Europe)
 
-        text_europe = font.render("Европа", True, 'white')
-        window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 210,
-                                  button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 215))
+        print_text("Европа", button_x + button_width // 2 - 255, button_start_y + button_height // 2 - 70)
 
         button_America = pygame.Rect(button_x - 50, button_exit_y - 220, button_width + 80, button_height + 5)
         pygame.draw.rect(window, America_color, button_America)
 
-        text_europe = font.render("Америка", True, 'white')
-        window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 10,
-                                  button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 215))
+        print_text("Америка", button_x + button_width // 2 - 60, button_start_y + button_height // 2 - 70)
 
         button_Asia = pygame.Rect(button_x + 150, button_exit_y - 220, button_width + 80, button_height + 5)
         pygame.draw.rect(window, Asia_color, button_Asia)
 
-        text_europe = font.render("Азия", True, 'white')
-        window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 + 190,
-                                  button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 215))
+        print_text("Азия", button_x + button_width // 2 + 155, button_start_y + button_height // 2 - 70)
 
         button_Flags = pygame.Rect(button_x - 200, button_exit_y - 120, button_width + 80, button_height + 5)
         pygame.draw.rect(window, Flags_color, button_Flags)
 
-        text_europe = font.render("Флаги", True, 'white')
-        window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 160,
-                                  button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 118))
+        print_text("Флаги", button_x + button_width // 2 - 200, button_exit_y + button_height // 2 - 130)
 
         button_Town = pygame.Rect(button_x + 80, button_exit_y - 120, button_width + 80, button_height + 5)
         pygame.draw.rect(window, Town_color, button_Town)
 
-        text_europe = font.render("Города", True, 'white')
-        window.blit(text_europe, (button_x + 15 + button_width // 2 - text_europe.get_width() // 2 + 100,
-                                  button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 118))
+        print_text("Города", button_x + button_width // 2 + 70, button_exit_y + button_height // 2 - 130)
 
         button_Eng = pygame.Rect(button_x - 120, button_exit_y - 40, button_width + 200, button_height + 5)
         pygame.draw.rect(window, Eng_color, button_Eng)
 
-        text_europe = font.render("Английские Названия", True, 'white')
-        window.blit(text_europe, (button_x + button_width // 2 - text_europe.get_width() // 2 - 20,
-                                  button_exit_y + button_height // 2 - text_europe.get_height() // 2 - 38))
+        print_text("Английские Названия", button_x + button_width // 2 - 160, button_exit_y + button_height // 2 - 53)
 
         button_next = pygame.Rect(button_x - 40, button_exit_y + 55, button_width + 80, button_height + 5)
         pygame.draw.rect(window, 'brown', button_next)
 
-        text_continue = font.render("Продолжить", True, 'white')
-        window.blit(text_continue, (button_x + button_width // 2 - text_continue.get_width() // 2,
-                                    button_exit_y + button_height // 2 - text_continue.get_height() // 2 + 60))
+        print_text("Продолжить", button_x - button_width // 2 + 15, button_exit_y + button_height // 2 + 45)
 
         button_back = pygame.Rect(button_x - 40, button_exit_y + 125, button_width + 80, button_height + 5)
         pygame.draw.rect(window, 'brown', button_back)
 
-        text_back = font.render("Назад", True, 'white')
-        window.blit(text_back, (button_x + button_width // 2 - text_back.get_width() // 2,
-                                button_exit_y + button_height // 2 - text_back.get_height() // 2 + 130))
+        print_text("Назад", button_x + button_width // 2 - 45, button_exit_y + button_height // 2 + 115)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                quit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
@@ -810,10 +811,14 @@ def Check_setting():
         pygame.display.flip()
 
 
+# начало игры, режимы: английские названия и флаги
 def Game(type1, type2):
+    global LOGIN
     pygame.display.set_caption('Игра')
+
     # количество раундов
-    n = 10
+    round = N
+
     clock = pygame.time.Clock()
     counter, text = 10, '10'.rjust(3)
     pygame.time.set_timer(pygame.USEREVENT, 1500)
@@ -831,28 +836,41 @@ def Game(type1, type2):
     # Переменная для хранения правильной кнопки
     correct_button = None
     wrong_button = None
+
     is_wrong_answer = False
+    wrong_answer = 0
 
     # Главный цикл программы
     new_round = True
-    running = True
-    while running and n != -1:
+    while round != -1:
         window.fill('white')
 
         if new_round:
-            n -= 1
-            counter, text = 11, str(counter).rjust(3)
+            round -= 1
+            counter, text = 10, str(counter).rjust(3)
             random_country_eng, random_country_rus, random_countries_rus = get_random_country_eng(type1)
+
             correct_button = None
             wrong_button = None
+
             is_wrong_answer = False
             new_round = False
 
-        if n == -1:
-            end(res_game='Victory')
+        if round == -1:
+
+            percent = int((N - wrong_answer) / N) * 100
+
+            # Обновление значения процента в выбранном режиме
+            cursor.execute(f"UPDATE setting SET {type2} = ? WHERE login = ?", (percent, LOGIN))
+            conn.commit()
+
+            # Закрытие соединения с базой данных
+            conn.close()
+
+            end(res_game='Победа!')
 
         if 'mod_flag' in type2 and 'mod_eng' not in type2:
-            flag = pygame.transform.scale(pygame.image.load('data/images' + '/Flag_' + random_country_eng + '.png'),
+            flag = pygame.transform.scale(pygame.image.load('data/images/' + type1 + '/Flag_' + random_country_eng + '.png'),
                                           (window_width, window_height))
             flag_rect = flag.get_rect()
             window.blit(flag, flag_rect)
@@ -878,12 +896,13 @@ def Game(type1, type2):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                quit()
             if event.type == pygame.USEREVENT:
                 counter -= 1
                 if counter > 0:
                     text = str(counter).rjust(3)
                 else:
-                    end(res_game='Game over')
+                    end(res_game='Ты проиграл!')
                 is_wrong_answer = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
@@ -919,28 +938,32 @@ def Game(type1, type2):
                 if wrong_button:
                     if counter > 5:
                         counter -= 5
-                        text = str(counter).rjust(3)
                     else:
                         counter = 0
-                        text = str(counter).rjust(3)
+                    text = str(counter).rjust(3)
+                    wrong_answer += 1
                     is_wrong_answer = False
 
         pygame.draw.rect(window, 'grey', (720, 0, 800, 40))
         window.blit(font.render(text, True, (0, 0, 0)), (720, 10))
+
         pygame.display.update()
         pygame.display.flip()
         clock.tick(30)
 
 
+# нарисовать город
 def draw_town(window, town_color, x, y):
     pygame.draw.circle(window, town_color, (x, y), 4)
 
 
+# нарисовать города
 def draw_all_towns(window, town_color, towns):
     for town in towns:
         draw_town(window, town_color, town[0], town[1])
 
 
+# режим города Америки
 def Game_America():
     type = 'Америка'
     game(type, America_image,
@@ -952,6 +975,7 @@ def Game_America():
           (265, 259), (273, 247), (310, 255), (343, 300), (312, 281), (301, 295), (398, 318), (592, 393), (613, 398)])
 
 
+# режим города Азии
 def Game_Asia():
     type = 'Азия'
     game(type, Asia_image,
@@ -966,6 +990,7 @@ def Game_Asia():
           (377, 364), (558, 300), (537, 306), (513, 316), (338, 167), (240, 175), (385, 198), (566, 256), (444, 296)])
 
 
+# режим города Европы
 def Game_Europe():
     type = 'Европа'
     game(type, Europe_image,
@@ -979,24 +1004,35 @@ def Game_Europe():
           (301, 410), (323, 406), (375, 485), (295, 335), (288, 430), (349, 433), (523, 454), (523, 51), (556, 156)])
 
 
+# начало игры, режим города
 def game(type, image, towns):
+    global LOGIN
+
     res = ''
+
     answers = 5
+    wrong_answer = 0
     kol = 0
+
     pygame.display.set_caption('Игра')
     window.blit(image, (0, 0))
+
     pygame.draw.rect(window, 'grey', (550, 440, 250, 150))
+
     town_color = 'brown'
     draw_all_towns(window, town_color, towns)
+
     pygame.display.flip()
 
     used_towns = []
+
     town_and_cords = get_random_towns(type)
     cords = town_and_cords[1].split(', ')
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 if abs(mouse_x - int(cords[0])) < 5 and abs(mouse_y - int(cords[1])) < 5:
@@ -1005,6 +1041,7 @@ def game(type, image, towns):
                     pygame.draw.circle(window, 'green', (int(cords[0]), int(cords[1])), 4)
                 else:
                     answers -= 1
+                    wrong_answer += 1
                 town_and_cords = get_random_towns(type)
                 cords = town_and_cords[1].split(', ')
                 while True:
@@ -1013,50 +1050,62 @@ def game(type, image, towns):
                         cords = town_and_cords[1].split(', ')
                     else:
                         break
+
             pygame.draw.rect(window, 'grey', (550, 440, 230, 150))
-            text_town = font.render(town_and_cords[0], True, 'black')
-            window.blit(text_town, (550, 450))
-            text_kol = font.render(('Счёт:' + str(kol)), True, 'black')
-            window.blit(text_kol, (550, 500))
-            text_answers = font.render('Число попыток:' + str(answers), True, 'black')
-            window.blit(text_answers, (550, 550))
-            if 0 <= kol / len(towns) < 0.3:
-                res = 'Плохой результат'
-            elif 0.3 <= kol / len(towns) < 0.7:
-                res = 'Неплохой результат'
-            elif 0.7 <= kol / len(towns) < 0.9:
-                res = 'Хороший результат'
-            elif 0.9 <= kol / len(towns) <= 1:
-                res = 'Отличный результат!'
-            if answers == 0:
+            print_text(town_and_cords[0], 550, 450, color='black')
+
+            print_text(f'Счёт: {str(kol)}', 550, 500, color='black')
+
+            print_text(f'Число попыток: {str(answers)}', 550, 550, color='black')
+
+            if kol == 10:
+                percent = int((N - wrong_answer) / N) * 100
+
+                # Обновление значения процента в выбранном режиме
+                cursor.execute(f"UPDATE setting SET mod_town = ? WHERE login = ?", (percent, LOGIN))
+                conn.commit()
+
+                # Закрытие соединения с базой данных
+                conn.close()
+
+                if 0 <= percent < 30:
+                    res = 'Плохой результат'
+                elif 30 <= percent < 70:
+                    res = 'Неплохой результат'
+                elif 70 <= percent < 90:
+                    res = 'Хороший результат'
+                elif 90 <= percent <= 100:
+                    res = 'Отличный результат!'
                 end(res)
+
+            if answers == 0:
+                end(res_game='Ты проиграл!')
+
         pygame.display.flip()
 
 
+# конец игры, финальное окно
 def end(res_game):
     pygame.display.set_caption('Конец игры')
     window.fill('white', (0, 0, window_width, window_height))
-    text_res1 = font1.render(res_game, True, 'Brown')
-    window.blit(text_res1, (50, 100))
-    text_go_out1 = font1.render('Нажмите любую клавишу,', True, 'Brown')
-    window.blit(text_go_out1, (50, 250))
-    text_go_out2 = font1.render('чтобы выйти', True, 'Brown')
-    window.blit(text_go_out2, (50, 300))
 
-    while running:
+    print_text(res_game, 50, 100, color='brown', font_size=50)
+
+    print_text('Нажмите любую клавишу,', 50, 250, color='brown')
+    print_text('чтобы выйти', 50, 300, color='brown')
+
+    while True:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
                 Menu()
+
         pygame.display.flip()
 
 
-running = True
+# запуск игры
 Menu()
-while running:
+while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
-            sys.exit()
+            quit()
