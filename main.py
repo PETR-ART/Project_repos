@@ -1,4 +1,5 @@
 import sqlite3
+
 import random
 import pygame
 import os
@@ -75,6 +76,37 @@ towns_Asia = {'Стамбул': '28, 267', 'Анкара': '44, 279', 'Анта�
               'Владивосток': '526, 255', 'Куньмин': '377, 364', 'Токио': '558, 300', 'Осака': '537, 306',
               ' Фукуока': '513, 316', 'Красноярск': '338, 167', 'Омск': '240, 175', 'Иркутск': '385, 198',
               'Саппоро': '566, 256', 'Цзинань': '444, 296'}
+
+
+class Sprite(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height, text, color='brown', text_color='white', font_size=38):
+        super().__init__()
+        self.image = pygame.Surface([width, height])
+        self.rect = self.image.get_rect()
+        self.color = color
+        self.image.fill(pygame.Color(self.color))
+        self.rect.x = x
+        self.rect.y = y
+        self.font = pygame.font.Font(None, font_size)
+        self.text = text
+        self.text_color = text_color
+
+    def update_text(self, text):
+        self.text = text
+
+    def update_color(self, color):
+        self.color = color
+
+    def update_text_color(self, text_color):
+        self.text_color = text_color
+
+    def draw(self, window):
+        text = self.font.render(self.text, True, self.text_color)
+        text_width, text_height = text.get_size()
+        x_offset = (self.rect.width - text_width) // 2
+        y_offset = (self.rect.height - text_height) // 2
+        window.blit(self.image, (self.rect.x, self.rect.y))
+        window.blit(text, (self.rect.x + x_offset, self.rect.y + y_offset))
 
 
 # написание текста
@@ -187,20 +219,9 @@ def Menu():
     pygame.display.set_caption("Меню")
     window.blit(start_image, (0, 0))
 
-    button_start = pygame.Rect(button_x, button_start_y, button_width, button_height)
-    pygame.draw.rect(window, 'brown', button_start)
-
-    print_text("Старт", button_x + button_width // 2 - 38, button_start_y + button_height // 2 - 15)
-
-    button_rating = pygame.Rect(button_x, button_rating_y, button_width, button_height)
-    pygame.draw.rect(window, 'brown', button_rating)
-
-    print_text("Рейтинг", button_x + button_width // 2 - 48, button_rating_y + button_height // 2 - 15, font_size=36)
-
-    button_exit = pygame.Rect(button_x, button_exit_y, button_width, button_height)
-    pygame.draw.rect(window, 'brown', button_exit)
-
-    print_text("Выход", button_x + button_width // 2 - 45, button_exit_y + button_height // 2 - 15)
+    button_start_sprite = Sprite(button_x, button_start_y, button_width, button_height, "Старт")
+    button_rating_sprite = Sprite(button_x - 5, button_rating_y, button_width + 10, button_height, "Рейтинг", font_size=36)
+    button_exit_sprite = Sprite(button_x, button_exit_y, button_width, button_height, "Выход")
 
     while True:
         for event in pygame.event.get():
@@ -210,13 +231,17 @@ def Menu():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                if button_start.collidepoint(mouse_pos):
+                if button_start_sprite.rect.collidepoint(mouse_pos):
                     Start()
-                elif button_rating.collidepoint(mouse_pos):
+                elif button_rating_sprite.rect.collidepoint(mouse_pos):
                     Rating()
-                elif button_exit.collidepoint(mouse_pos):
+                elif button_exit_sprite.rect.collidepoint(mouse_pos):
                     pygame.quit()
                     quit()
+
+        button_start_sprite.draw(window)
+        button_rating_sprite.draw(window)
+        button_exit_sprite.draw(window)
 
         pygame.display.flip()
 
@@ -226,25 +251,10 @@ def Start():
     pygame.display.set_caption("Инициализация")
     window.blit(first_image, (0, 0))
 
-    button_enter = pygame.Rect(button_x - 120, button_start_y, button_width + 30, button_height + 10)
-    pygame.draw.rect(window, 'brown', button_enter)
-
-    print_text("Вход", button_x + button_width // 2 - 140, button_start_y + button_height // 2 - 10)
-
-    button_register = pygame.Rect(button_x + 70, button_start_y, button_width + 100, button_height + 10)
-    pygame.draw.rect(window, 'brown', button_register)
-
-    print_text("Регистрация", button_x + button_width // 2 + 38, button_start_y + button_height // 2 - 10)
-
-    button_next = pygame.Rect(button_x - 40, button_exit_y - 5, button_width + 80, button_height + 5)
-    pygame.draw.rect(window, 'brown', button_next)
-
-    print_text("Продолжить", button_x - button_width // 2 + 15, button_exit_y + button_height // 2 - 15)
-
-    button_back = pygame.Rect(button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5)
-    pygame.draw.rect(window, 'brown', button_back)
-
-    print_text("Назад", button_x + button_width // 2 - 45, button_exit_y + button_height // 2 + 55)
+    button_enter_sprite = Sprite(button_x - 120, button_start_y, button_width + 30, button_height + 10, "Вход")
+    button_register_sprite = Sprite(button_x + 70, button_start_y, button_width + 100, button_height + 10,
+                                    "Регистрация")
+    button_back_sprite = Sprite(button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5, "Назад")
 
     while True:
         for event in pygame.event.get():
@@ -255,17 +265,18 @@ def Start():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
 
-                if button_enter.collidepoint(mouse_pos):
+                if button_enter_sprite.rect.collidepoint(mouse_pos):
                     Enter()
 
-                if button_register.collidepoint(mouse_pos):
+                if button_register_sprite.rect.collidepoint(mouse_pos):
                     Register()
 
-                if button_next.collidepoint(mouse_pos):
-                    Check_setting()
-
-                if button_back.collidepoint(mouse_pos):
+                if button_back_sprite.rect.collidepoint(mouse_pos):
                     Menu()
+
+        button_enter_sprite.draw(window)
+        button_register_sprite.draw(window)
+        button_back_sprite.draw(window)
 
         pygame.display.flip()
 
@@ -276,33 +287,15 @@ def Register():
     pygame.display.set_caption("Регистрация")
     window.blit(first_image, (0, 0))
 
-    button_login = pygame.Rect(button_x - 100, button_start_y - 50, button_width + 200, button_height + 15)
-    pygame.draw.rect(window, 'brown', button_login)
+    button_login_sprite = Sprite(button_x - 100, button_start_y - 50, button_width + 200, button_height + 15,
+                                 "Введите логин", text_color="dark grey", font_size=40)
+    button_password_sprite = Sprite(button_x - 100, button_start_y + 20, button_width + 200, button_height + 15,
+                                    "Введите пароль", text_color="dark grey", font_size=40)
+    button_next_sprite = Sprite(button_x - 40, button_exit_y - 5, button_width + 80, button_height + 5, "Продолжить")
+    button_back_sprite = Sprite(button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5, "Назад")
 
-    print_text("Введите логин", button_x - button_width // 2 - 35, button_start_y + button_height // 2 - 55,
-               color="dark grey", font_size=40)
-
-    button_password = pygame.Rect(button_x - 100, button_start_y + 20, button_width + 200, button_height + 15)
-    pygame.draw.rect(window, 'brown', button_password)
-
-    print_text("Введите пароль", button_x - button_width // 2 - 35, button_start_y + button_height // 2 + 15,
-               color="dark grey", font_size=40)
-
-    button_next = pygame.Rect(button_x - 40, button_exit_y - 5, button_width + 80, button_height + 5)
-    pygame.draw.rect(window, 'brown', button_next)
-
-    print_text("Продолжить", button_x - button_width // 2 + 15, button_exit_y + button_height // 2 - 15)
-
-    button_back = pygame.Rect(button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5)
-    pygame.draw.rect(window, 'brown', button_back)
-
-    print_text("Назад", button_x + button_width // 2 - 45, button_exit_y + button_height // 2 + 55)
-
-    button_enter = pygame.Rect(button_x - 250, button_start_y - 165, button_width + 500, button_height + 10)
-    pygame.draw.rect(window, 'white', button_enter)
-
-    print_text("Введите Логин и Пароль", window_width // 2 - 160, button_start_y - 150,
-               color='red')
+    button_enter_sprite = Sprite(button_x - 250, button_start_y - 165, button_width + 500, button_height + 10,
+                                 "Введите Логин и Пароль", color='white', text_color="red")
 
     login = '|'
     password = '|'
@@ -348,15 +341,15 @@ def Register():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
 
-                if button_login.collidepoint(mouse_pos):
+                if button_login_sprite.rect.collidepoint(mouse_pos):
                     need_input_login = True
                     need_input_password = False
 
-                if button_password.collidepoint(mouse_pos):
+                if button_password_sprite.rect.collidepoint(mouse_pos):
                     need_input_password = True
                     need_input_login = False
 
-                if button_next.collidepoint(mouse_pos):
+                if button_next_sprite.rect.collidepoint(mouse_pos):
                     text = ''
 
                     need_input_login = False
@@ -393,10 +386,9 @@ def Register():
                     else:
                         text = "Ошибка! Введите логин и пароль"
 
-                    pygame.draw.rect(window, 'white', button_enter)
-                    print_text(text, window_width // 2 - 210, button_start_y - 150, color='red')
+                    button_enter_sprite.update_text(text)
 
-                if button_back.collidepoint(mouse_pos):
+                if button_back_sprite.rect.collidepoint(mouse_pos):
                     Start()
 
         tick -= 1
@@ -409,23 +401,26 @@ def Register():
             tick = 1000
 
         if need_input_login:
-            pygame.draw.rect(window, 'brown', button_login)
-            print_text(login, button_x - button_width // 2 - 35, button_start_y + button_height // 2 - 55, font_size=40)
+            button_login_sprite.update_text(login)
+            button_login_sprite.update_text_color('white')
 
         elif login == '' and not need_input_login:
-            pygame.draw.rect(window, 'brown', button_login)
-            print_text("Введите логин", button_x - button_width // 2 - 35, button_start_y + button_height // 2 - 55,
-                       color="dark grey", font_size=40)
+            button_login_sprite.update_text("Введите логин")
+            button_login_sprite.update_text_color("dark grey")
 
         if need_input_password:
-            pygame.draw.rect(window, 'brown', button_password)
-            print_text(password, button_x - button_width // 2 - 35, button_start_y + button_height // 2 + 15,
-                       font_size=40)
+            button_password_sprite.update_text(password)
+            button_password_sprite.update_text_color('white')
 
         elif password == '' and not need_input_password:
-            pygame.draw.rect(window, 'brown', button_password)
-            print_text("Введите пароль", button_x - button_width // 2 - 35, button_start_y + button_height // 2 + 15,
-                       color="dark grey", font_size=40)
+            button_password_sprite.update_text("Введите пароль")
+            button_password_sprite.update_text_color("dark grey")
+
+        button_login_sprite.draw(window)
+        button_password_sprite.draw(window)
+        button_next_sprite.draw(window)
+        button_back_sprite.draw(window)
+        button_enter_sprite.draw(window)
 
         pygame.display.flip()
 
@@ -433,37 +428,18 @@ def Register():
 # вход
 def Enter():
     global LOGIN
-
     pygame.display.set_caption("Вход")
     window.blit(first_image, (0, 0))
 
-    button_login = pygame.Rect(button_x - 100, button_start_y - 50, button_width + 200, button_height + 15)
-    pygame.draw.rect(window, 'brown', button_login)
+    button_login_sprite = Sprite(button_x - 100, button_start_y - 50, button_width + 200, button_height + 15,
+                                 "Введите логин", text_color="dark grey", font_size=40)
+    button_password_sprite = Sprite(button_x - 100, button_start_y + 20, button_width + 200, button_height + 15,
+                                    "Введите пароль", text_color="dark grey", font_size=40)
+    button_next_sprite = Sprite(button_x - 40, button_exit_y - 5, button_width + 80, button_height + 5, "Продолжить")
+    button_back_sprite = Sprite(button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5, "Назад")
 
-    print_text("Введите логин", button_x - button_width // 2 - 35, button_start_y + button_height // 2 - 55,
-               color="dark grey", font_size=40)
-
-    button_password = pygame.Rect(button_x - 100, button_start_y + 20, button_width + 200, button_height + 15)
-    pygame.draw.rect(window, 'brown', button_password)
-
-    print_text("Введите пароль", button_x - button_width // 2 - 35, button_start_y + button_height // 2 + 15,
-               color="dark grey", font_size=40)
-
-    button_next = pygame.Rect(button_x - 40, button_exit_y - 5, button_width + 80, button_height + 5)
-    pygame.draw.rect(window, 'brown', button_next)
-
-    print_text("Продолжить", button_x - button_width // 2 + 15, button_exit_y + button_height // 2 - 15)
-
-    button_back = pygame.Rect(button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5)
-    pygame.draw.rect(window, 'brown', button_back)
-
-    print_text("Назад", button_x + button_width // 2 - 45, button_exit_y + button_height // 2 + 55)
-
-    button_enter = pygame.Rect(button_x - 250, button_start_y - 165, button_width + 500, button_height + 10)
-    pygame.draw.rect(window, 'white', button_enter)
-
-    print_text("Введите Логин и Пароль", window_width // 2 - 160, button_start_y - 150,
-               color='red')
+    button_enter_sprite = Sprite(button_x - 250, button_start_y - 165, button_width + 500, button_height + 10,
+                                 "Введите Логин и Пароль", color='white', text_color="red")
 
     login = '|'
     password = '|'
@@ -509,15 +485,15 @@ def Enter():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
 
-                if button_login.collidepoint(mouse_pos):
+                if button_login_sprite.rect.collidepoint(mouse_pos):
                     need_input_login = True
                     need_input_password = False
 
-                if button_password.collidepoint(mouse_pos):
+                if button_password_sprite.rect.collidepoint(mouse_pos):
                     need_input_password = True
                     need_input_login = False
 
-                if button_next.collidepoint(mouse_pos):
+                if button_next_sprite.rect.collidepoint(mouse_pos):
                     text = ''
 
                     need_input_login = False
@@ -551,10 +527,12 @@ def Enter():
                     else:
                         text = "Ошибка! Введите логин и пароль"
 
-                    pygame.draw.rect(window, 'white', button_enter)
-                    print_text(text, window_width // 2 - 200, button_start_y - 150, color='red')
+                    # Закрытие соединения с базой данных
+                    conn.close()
 
-                if button_back.collidepoint(mouse_pos):
+                    button_enter_sprite.update_text(text)
+
+                if button_back_sprite.rect.collidepoint(mouse_pos):
                     Start()
 
         tick -= 1
@@ -567,23 +545,26 @@ def Enter():
             tick = 1000
 
         if need_input_login:
-            pygame.draw.rect(window, 'brown', button_login)
-            print_text(login, button_x - button_width // 2 - 35, button_start_y + button_height // 2 - 55, font_size=40)
+            button_login_sprite.update_text(login)
+            button_login_sprite.update_text_color('white')
 
         elif login == '' and not need_input_login:
-            pygame.draw.rect(window, 'brown', button_login)
-            print_text("Введите логин", button_x - button_width // 2 - 35, button_start_y + button_height // 2 - 55,
-                       color="dark grey", font_size=40)
+            button_login_sprite.update_text("Введите логин")
+            button_login_sprite.update_text_color("dark grey")
 
         if need_input_password:
-            pygame.draw.rect(window, 'brown', button_password)
-            print_text(password, button_x - button_width // 2 - 35, button_start_y + button_height // 2 + 15,
-                       font_size=40)
+            button_password_sprite.update_text(password)
+            button_password_sprite.update_text_color('white')
 
         elif password == '' and not need_input_password:
-            pygame.draw.rect(window, 'brown', button_password)
-            print_text("Введите пароль", button_x - button_width // 2 - 35, button_start_y + button_height // 2 + 15,
-                       color="dark grey", font_size=40)
+            button_password_sprite.update_text("Введите пароль")
+            button_password_sprite.update_text_color("dark grey")
+
+        button_login_sprite.draw(window)
+        button_password_sprite.draw(window)
+        button_next_sprite.draw(window)
+        button_back_sprite.draw(window)
+        button_enter_sprite.draw(window)
 
         pygame.display.flip()
 
@@ -615,10 +596,7 @@ def Rating():
 
     print_text("Рекорды", window_width // 2 - 65, button_start_y - 150, color='red')
 
-    button_back = pygame.Rect(button_x - 40, button_exit_y + 125, button_width + 80, button_height + 5)
-    pygame.draw.rect(window, 'brown', button_back)
-
-    print_text("Назад", button_x + button_width // 2 - 45, button_exit_y + button_height // 2 + 115)
+    button_back_sprite = Sprite(button_x - 40, button_exit_y + 125, button_width + 80, button_height + 5, "Назад")
 
     print_rating('Eng', 'mod_eng', 110, 100)
     print_rating('Flag', 'mod_flag', 310, 100)
@@ -632,8 +610,10 @@ def Rating():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                if button_back.collidepoint(mouse_pos):
+                if button_back_sprite.rect.collidepoint(mouse_pos):
                     Menu()
+
+        button_back_sprite.draw(window)
 
         pygame.display.flip()
 
@@ -664,52 +644,28 @@ def Check_setting():
     pygame.display.set_caption("Выбор Режима")
     window.blit(first_image, (0, 0))
 
-    button_enter = pygame.Rect(button_x - 250, button_start_y - 165, button_width + 500, button_height + 10)
-    pygame.draw.rect(window, 'white', button_enter)
-
-    print_text("Выберите режим", window_width // 2 - 100, button_start_y - 150, color='brown')
+    button_enter_sprite = Sprite(button_x - 250, button_start_y - 165, button_width + 500, button_height + 10,
+                                 "Выберите режим", color="white", text_color='brown')
 
     while True:
         # Отображение кнопок
-        button_Europe = pygame.Rect(button_x - 250, button_exit_y - 220, button_width + 80, button_height + 5)
-        pygame.draw.rect(window, Europe_color, button_Europe)
+        button_Europe_sprite = Sprite(button_x - 250, button_exit_y - 220, button_width + 80, button_height + 5,
+                                        "Европа", color=Europe_color)
+        button_America_sprite = Sprite(button_x - 50, button_exit_y - 220, button_width + 80, button_height + 5,
+                                      "Америка", color=America_color)
+        button_Asia_sprite = Sprite(button_x + 150, button_exit_y - 220, button_width + 80, button_height + 5,
+                                      "Азия", color=Asia_color)
 
-        print_text("Европа", button_x + button_width // 2 - 255, button_start_y + button_height // 2 - 70)
+        button_Flags_sprite = Sprite(button_x - 200, button_exit_y - 120, button_width + 80, button_height + 5,
+                                    "Флаги", color=Flags_color)
+        button_Town_sprite = Sprite(button_x + 80, button_exit_y - 120, button_width + 80, button_height + 5,
+                                    "Города", color=Town_color)
+        button_Eng_sprite = Sprite(button_x - 120, button_exit_y - 40, button_width + 200, button_height + 5,
+                                    "Английские Названия", color=Eng_color)
 
-        button_America = pygame.Rect(button_x - 50, button_exit_y - 220, button_width + 80, button_height + 5)
-        pygame.draw.rect(window, America_color, button_America)
+        button_next_sprite = Sprite(button_x - 40, button_exit_y + 55, button_width + 80, button_height + 5, "Продолжить")
+        button_back_sprite = Sprite(button_x - 40, button_exit_y + 125, button_width + 80, button_height + 5, "Назад")
 
-        print_text("Америка", button_x + button_width // 2 - 60, button_start_y + button_height // 2 - 70)
-
-        button_Asia = pygame.Rect(button_x + 150, button_exit_y - 220, button_width + 80, button_height + 5)
-        pygame.draw.rect(window, Asia_color, button_Asia)
-
-        print_text("Азия", button_x + button_width // 2 + 155, button_start_y + button_height // 2 - 70)
-
-        button_Flags = pygame.Rect(button_x - 200, button_exit_y - 120, button_width + 80, button_height + 5)
-        pygame.draw.rect(window, Flags_color, button_Flags)
-
-        print_text("Флаги", button_x + button_width // 2 - 200, button_exit_y + button_height // 2 - 130)
-
-        button_Town = pygame.Rect(button_x + 80, button_exit_y - 120, button_width + 80, button_height + 5)
-        pygame.draw.rect(window, Town_color, button_Town)
-
-        print_text("Города", button_x + button_width // 2 + 70, button_exit_y + button_height // 2 - 130)
-
-        button_Eng = pygame.Rect(button_x - 120, button_exit_y - 40, button_width + 200, button_height + 5)
-        pygame.draw.rect(window, Eng_color, button_Eng)
-
-        print_text("Английские Названия", button_x + button_width // 2 - 160, button_exit_y + button_height // 2 - 53)
-
-        button_next = pygame.Rect(button_x - 40, button_exit_y + 55, button_width + 80, button_height + 5)
-        pygame.draw.rect(window, 'brown', button_next)
-
-        print_text("Продолжить", button_x - button_width // 2 + 15, button_exit_y + button_height // 2 + 45)
-
-        button_back = pygame.Rect(button_x - 40, button_exit_y + 125, button_width + 80, button_height + 5)
-        pygame.draw.rect(window, 'brown', button_back)
-
-        print_text("Назад", button_x + button_width // 2 - 45, button_exit_y + button_height // 2 + 115)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -719,10 +675,10 @@ def Check_setting():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
 
-                if button_back.collidepoint(mouse_pos):
+                if button_back_sprite.rect.collidepoint(mouse_pos):
                     Start()
 
-                if button_Europe.collidepoint(mouse_pos):
+                if button_Europe_sprite.rect.collidepoint(mouse_pos):
                     if Europe:
                         Europe_color = 'brown'
                         Europe = False
@@ -732,7 +688,7 @@ def Check_setting():
                         Asia_color = 'brown'
                         Europe = True
 
-                if button_America.collidepoint(mouse_pos):
+                if button_America_sprite.rect.collidepoint(mouse_pos):
                     if America:
                         America_color = 'brown'
                         America = False
@@ -742,7 +698,7 @@ def Check_setting():
                         Asia_color = 'brown'
                         America = True
 
-                if button_Asia.collidepoint(mouse_pos):
+                if button_Asia_sprite.rect.collidepoint(mouse_pos):
                     if Asia:
                         Asia_color = 'brown'
                         Asia = False
@@ -752,7 +708,7 @@ def Check_setting():
                         Europe_color = 'brown'
                         Asia = True
 
-                if button_Flags.collidepoint(mouse_pos):
+                if button_Flags_sprite.rect.collidepoint(mouse_pos):
                     if mod_flag:
                         Flags_color = 'brown'
                         mod_flag = False
@@ -762,7 +718,7 @@ def Check_setting():
                         Town_color = 'brown'
                         mod_flag = True
 
-                if button_Town.collidepoint(mouse_pos):
+                if button_Town_sprite.rect.collidepoint(mouse_pos):
                     if mod_towns:
                         Town_color = 'brown'
                         mod_towns = False
@@ -772,7 +728,7 @@ def Check_setting():
                         Eng_color = 'brown'
                         mod_towns = True
 
-                if button_Eng.collidepoint(mouse_pos):
+                if button_Eng_sprite.rect.collidepoint(mouse_pos):
                     if mod_eng:
                         Eng_color = 'brown'
                         mod_eng = False
@@ -782,7 +738,7 @@ def Check_setting():
                         Town_color = 'brown'
                         mod_eng = True
 
-                if button_next.collidepoint(mouse_pos):
+                if button_next_sprite.rect.collidepoint(mouse_pos):
                     if Europe and Europe_color == 'red' and mod_towns and Town_color == 'red':
                         Game_Europe()
                     if America and America_color == 'red' and mod_towns and Town_color == 'red':
@@ -808,6 +764,16 @@ def Check_setting():
                     if type1 and type2:
                         Game(type1, type2)
 
+        button_Europe_sprite.draw(window)
+        button_America_sprite.draw(window)
+        button_Asia_sprite.draw(window)
+        button_Flags_sprite.draw(window)
+        button_Town_sprite.draw(window)
+        button_Eng_sprite.draw(window)
+        button_next_sprite.draw(window)
+        button_back_sprite.draw(window)
+        button_enter_sprite.draw(window)
+
         pygame.display.flip()
 
 
@@ -823,20 +789,8 @@ def Game(type1, type2):
     counter, text = 10, '10'.rjust(3)
     pygame.time.set_timer(pygame.USEREVENT, 1500)
 
-    # Загрузка шрифта
-    font = pygame.font.Font(None, 36)
-    font1 = pygame.font.Font(None, 60)
-
-    # Создание кнопок
-    button1 = pygame.Rect(100, 200, 200, 50)
-    button2 = pygame.Rect(100, 300, 200, 50)
-    button3 = pygame.Rect(500, 200, 200, 50)
-    button4 = pygame.Rect(500, 300, 200, 50)
-
-    # Переменная для хранения правильной кнопки
-    correct_button = None
-    wrong_button = None
-
+    # Переменная для хранения неправильной кнопки
+    wrong_button = False
     is_wrong_answer = False
     wrong_answer = 0
 
@@ -850,9 +804,13 @@ def Game(type1, type2):
             counter, text = 10, str(counter).rjust(3)
             random_country_eng, random_country_rus, random_countries_rus = get_random_country_eng(type1)
 
-            correct_button = None
-            wrong_button = None
+            sprite_sprites = pygame.sprite.Group()
+            sprite_positions = [(100, 200), (100, 300), (500, 200), (500, 300)]
+            for i in range(4):
+                sprite = Sprite(sprite_positions[i][0], sprite_positions[i][1], 200, 50, random_countries_rus[i])
+                sprite_sprites.add(sprite)
 
+            wrong_button = False
             is_wrong_answer = False
             new_round = False
 
@@ -874,24 +832,12 @@ def Game(type1, type2):
                                           (window_width, window_height))
             flag_rect = flag.get_rect()
             window.blit(flag, flag_rect)
+
         elif 'mod_flag' not in type2 and 'mod_eng' in type2:
-            country_eng = font1.render(random_country_eng, True, 'black')
-            window.blit(country_eng, (window_width / 2 - 60, 50))
+            print_text(random_country_eng, window_width / 2 - 60, 50, color='black', font_size=60)
 
-        button1_text = font.render(random_countries_rus[0], True, 'black')
-        button2_text = font.render(random_countries_rus[1], True, 'black')
-        button3_text = font.render(random_countries_rus[2], True, 'black')
-        button4_text = font.render(random_countries_rus[3], True, 'black')
-
-        pygame.draw.rect(window, 'green' if correct_button == button1_text else 'brown', button1)
-        pygame.draw.rect(window, 'green' if correct_button == button2_text else 'brown', button2)
-        pygame.draw.rect(window, 'green' if correct_button == button3_text else 'brown', button3)
-        pygame.draw.rect(window, 'green' if correct_button == button4_text else 'brown', button4)
-
-        window.blit(button1_text, (button1.x + 10, button1.y + 10))
-        window.blit(button2_text, (button2.x + 10, button2.y + 10))
-        window.blit(button3_text, (button3.x + 10, button3.y + 10))
-        window.blit(button4_text, (button4.x + 10, button4.y + 10))
+        for sprite in sprite_sprites:
+            sprite.draw(window)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -904,36 +850,17 @@ def Game(type1, type2):
                 else:
                     end(res_game='Ты проиграл!')
                 is_wrong_answer = False
+
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = event.pos
-                if button1.collidepoint(mouse_pos):
-                    if random_countries_rus[0] == random_country_rus:
-                        correct_button = button1_text
-                        new_round = True
-                    else:
-                        wrong_button = button1_text
-                        is_wrong_answer = True
-                elif button2.collidepoint(mouse_pos):
-                    if random_countries_rus[1] == random_country_rus:
-                        correct_button = button2_text
-                        new_round = True
-                    else:
-                        wrong_button = button2_text
-                        is_wrong_answer = True
-                elif button3.collidepoint(mouse_pos):
-                    if random_countries_rus[2] == random_country_rus:
-                        correct_button = button3_text
-                        new_round = True
-                    else:
-                        wrong_button = button3_text
-                        is_wrong_answer = True
-                elif button4.collidepoint(mouse_pos):
-                    if random_countries_rus[3] == random_country_rus:
-                        correct_button = button4_text
-                        new_round = True
-                    else:
-                        wrong_button = button4_text
-                        is_wrong_answer = True
+                for sprite in sprite_sprites:
+                    if sprite.rect.collidepoint(mouse_pos):
+                        if sprite.text == random_country_rus:
+                            new_round = True
+                        else:
+                            wrong_button = True
+                            is_wrong_answer = True
+
             if is_wrong_answer:
                 if wrong_button:
                     if counter > 5:
@@ -1096,7 +1023,7 @@ def end(res_game):
 
     while True:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
+            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                 Menu()
 
         pygame.display.flip()
@@ -1104,8 +1031,3 @@ def end(res_game):
 
 # запуск игры
 Menu()
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            quit()
