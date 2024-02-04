@@ -1,12 +1,11 @@
 import sqlite3
-
 import random
 import pygame
 import os
 
 
 # Логин игрока
-LOGIN = ''
+LOGIN = None
 
 # количество раундов
 N = 10
@@ -16,9 +15,22 @@ conn = sqlite3.connect('comandproject.db')
 cursor = conn.cursor()
 
 # словари со странами
-America = {'США': 'USA', 'Канада': 'Canada', 'Мексика': 'Mexico', 'Куба': 'Cuba'}
-Asia = {'Япония': 'Japan', 'Китай': 'China', 'Индия': 'India', 'Индонезия': 'Indonesia'}
-Europe = {'Россия': 'Russia', 'Германия': 'Germany', 'Италия': 'Itali', 'Казахстан': 'Kazahstan'}
+America = {'США': 'USA', 'Канада': 'Canada', 'Мексика': 'Mexico', 'Куба': 'Cuba', 'Бразилия': 'Brazil',
+           'Аргентина': 'Argentina', 'Чили': 'Chile', 'Перу': 'Peru', 'Колумбия': 'Colombia', 'Венесуэла': 'Venezuela',
+           'Эквадор': 'Ecuador', 'Гватемала': 'Guatemala', 'Боливия': 'Bolivia', 'Уругвай': 'Uruguay',
+           'Парагвай': 'Paraguay', 'Гондурас': 'Honduras', 'Никарагуа': 'Nicaragua', 'Коста-Рика': 'Costa_Rica',
+           'Сальвадор': 'El_Salvador'}
+
+Asia = {'Япония': 'Japan', 'Китай': 'China', 'Индия': 'India', 'Индонезия': 'Indonesia', 'Южная Корея': 'South_Korea',
+        'ОАЭ': 'UAE', 'Турция': 'Turkey', 'Израиль': 'Israel', 'Малайзия': 'Malaysia', 'Афганистан': 'Afghanistan',
+        'Пакистан': 'Pakistan', 'Филиппины': 'Philippines', 'Ирак': 'Iraq', 'Иран': 'Iran', 'Вьетнам': 'Vietnam',
+        'Таиланд': 'Thailand', 'Бангладеш': 'Bangladesh', 'Сингапур': 'Singapore', 'Сирия': 'Syria'}
+
+Europe = {'Россия': 'Russia', 'Германия': 'Germany', 'Италия': 'Italy', 'Казахстан': 'Kazakhstan', 'Франция': 'France',
+          'Великобритания': 'United_Kingdom', 'Испания': 'Spain', 'Польша': 'Poland', 'Украина': 'Ukraine',
+          'Беларусь': 'Belarus', 'Греция': 'Greece', 'Австрия': 'Austria', 'Швейцария': 'Switzerland',
+          'Швеция': 'Sweden', 'Норвегия': 'Norway', 'Финляндия': 'Finland', 'Дания': 'Denmark', 'Исландия': 'Iceland',
+          'Ирландия': 'Ireland', 'Нидерланды': 'Netherlands'}
 
 
 # Словари с городами
@@ -36,7 +48,7 @@ towns_europe = {'Рим': '350, 464', 'Палермо': '359, 529', 'Венец�
                 'Подгорица': '428, 460', 'Загреб': '392, 406', 'Сараево': '419, 439', 'Сочи': '654, 409',
                 'Бордо': '208, 392', 'Кардиф': '206, 281', 'Эдинбург': '229, 218', 'Ла Корунья': '113, 391',
                 'Гамбург': '340, 283', 'Франкфурт': '316, 332', 'Мюнхен': '347, 367', 'Брно': '403, 351',
-                'Данциг': '426, 276', 'Великий Новгород': '539, 212', 'Ростов на Дону': '644, 360', 'Порту': '101, 424',
+                'Данциг': '426, 276', 'Новгород': '539, 212', 'Ростов на Дону': '644, 360', 'Порту': '101, 424',
                 'Брест': '473, 309', 'Львов': '485, 357', 'Одесса': '556, 387', 'Турин': '301, 410', 'Милан': '323, 406',
                 'Неаполь': '375, 485', 'Люксембург': '295, 335', 'Монако': '288, 430', 'Сан - Марино': '349, 433',
                 'Варна': '523, 454', 'Мурманск': '523, 51', 'Петрозаводск': '556, 156'}
@@ -79,9 +91,9 @@ towns_Asia = {'Стамбул': '28, 267', 'Анкара': '44, 279', 'Анта�
 
 
 class Sprite(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, height, text, color='brown', text_color='white', font_size=38):
+    def __init__(self, x, y, text_width, height, text, color='brown', text_color='white', font_size=38):
         super().__init__()
-        self.image = pygame.Surface([width, height])
+        self.image = pygame.Surface([text_width + 10, height])
         self.rect = self.image.get_rect()
         self.color = color
         self.image.fill(pygame.Color(self.color))
@@ -90,6 +102,9 @@ class Sprite(pygame.sprite.Sprite):
         self.font = pygame.font.Font(None, font_size)
         self.text = text
         self.text_color = text_color
+
+        if text_width + 10 > self.rect.width:
+            self.rect.width = text_width + 10
 
     def update_text(self, text):
         self.text = text
@@ -103,8 +118,11 @@ class Sprite(pygame.sprite.Sprite):
     def draw(self, window):
         text = self.font.render(self.text, True, self.text_color)
         text_width, text_height = text.get_size()
+        if text_width > self.rect.width:
+            self.rect.width = text_width + 10
         x_offset = (self.rect.width - text_width) // 2
         y_offset = (self.rect.height - text_height) // 2
+        self.image.fill(pygame.Color(self.color))
         window.blit(self.image, (self.rect.x, self.rect.y))
         window.blit(text, (self.rect.x + x_offset, self.rect.y + y_offset))
 
@@ -254,6 +272,7 @@ def Start():
     button_enter_sprite = Sprite(button_x - 120, button_start_y, button_width + 30, button_height + 10, "Вход")
     button_register_sprite = Sprite(button_x + 70, button_start_y, button_width + 100, button_height + 10,
                                     "Регистрация")
+    button_next_sprite = Sprite(button_x - 40, button_exit_y - 5, button_width + 80, button_height + 5, "Пропустить")
     button_back_sprite = Sprite(button_x - 40, button_exit_y + 65, button_width + 80, button_height + 5, "Назад")
 
     while True:
@@ -265,6 +284,9 @@ def Start():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
 
+                if button_next_sprite.rect.collidepoint(mouse_pos):
+                    Check_setting()
+
                 if button_enter_sprite.rect.collidepoint(mouse_pos):
                     Enter()
 
@@ -274,6 +296,7 @@ def Start():
                 if button_back_sprite.rect.collidepoint(mouse_pos):
                     Menu()
 
+        button_next_sprite.draw(window)
         button_enter_sprite.draw(window)
         button_register_sprite.draw(window)
         button_back_sprite.draw(window)
@@ -634,11 +657,13 @@ def Check_setting():
     mod_towns = False
     mod_flag = False
     mod_eng = False
+    mod_education = False
 
     # Флаги Цвета Кнопок У Настроек Режима
     Flags_color = 'brown'
     Town_color = 'brown'
     Eng_color = 'brown'
+    Education_color = 'brown'
 
     # Отображение заголовка
     pygame.display.set_caption("Выбор Режима")
@@ -655,11 +680,12 @@ def Check_setting():
                                       "Америка", color=America_color)
         button_Asia_sprite = Sprite(button_x + 150, button_exit_y - 220, button_width + 80, button_height + 5,
                                       "Азия", color=Asia_color)
-
-        button_Flags_sprite = Sprite(button_x - 200, button_exit_y - 120, button_width + 80, button_height + 5,
+        button_Flags_sprite = Sprite(button_x - 250, button_exit_y - 120, button_width + 80, button_height + 5,
                                     "Флаги", color=Flags_color)
-        button_Town_sprite = Sprite(button_x + 80, button_exit_y - 120, button_width + 80, button_height + 5,
+        button_Town_sprite = Sprite(button_x - 50, button_exit_y - 120, button_width + 80, button_height + 5,
                                     "Города", color=Town_color)
+        button_Education_sprite = Sprite(button_x + 150, button_exit_y - 120, button_width + 80, button_height + 5,
+                                    "Обучение", color=Education_color)
         button_Eng_sprite = Sprite(button_x - 120, button_exit_y - 40, button_width + 200, button_height + 5,
                                     "Английские Названия", color=Eng_color)
 
@@ -728,6 +754,17 @@ def Check_setting():
                         Eng_color = 'brown'
                         mod_towns = True
 
+                if button_Education_sprite.rect.collidepoint(mouse_pos):
+                    if mod_education:
+                        Education_color = 'brown'
+                        mod_education = False
+                    else:
+                        Education_color = 'red'
+                        Town_color = 'brown'
+                        Flags_color = 'brown'
+                        Eng_color = 'brown'
+                        mod_education = True
+
                 if button_Eng_sprite.rect.collidepoint(mouse_pos):
                     if mod_eng:
                         Eng_color = 'brown'
@@ -738,13 +775,17 @@ def Check_setting():
                         Town_color = 'brown'
                         mod_eng = True
 
+                type_ed = ''
+
                 if button_next_sprite.rect.collidepoint(mouse_pos):
+                    if mod_education == True:
+                        type_ed = 'education'
                     if Europe and Europe_color == 'red' and mod_towns and Town_color == 'red':
-                        Game_Europe()
+                        Game_Europe(type_ed)
                     if America and America_color == 'red' and mod_towns and Town_color == 'red':
-                        Game_America()
+                        Game_America(type_ed)
                     if Asia and Asia_color == 'red' and mod_towns and Town_color == 'red':
-                        Game_Asia()
+                        Game_Asia(type_ed)
 
                     type1 = ''
                     type2 = ''
@@ -769,6 +810,7 @@ def Check_setting():
         button_Asia_sprite.draw(window)
         button_Flags_sprite.draw(window)
         button_Town_sprite.draw(window)
+        button_Education_sprite.draw(window)
         button_Eng_sprite.draw(window)
         button_next_sprite.draw(window)
         button_back_sprite.draw(window)
@@ -789,6 +831,8 @@ def Game(type1, type2):
     counter, text = 10, '10'.rjust(3)
     pygame.time.set_timer(pygame.USEREVENT, 1500)
 
+    font1 = pygame.font.Font(None, 60)
+
     # Переменная для хранения неправильной кнопки
     wrong_button = False
     is_wrong_answer = False
@@ -805,9 +849,9 @@ def Game(type1, type2):
             random_country_eng, random_country_rus, random_countries_rus = get_random_country_eng(type1)
 
             sprite_sprites = pygame.sprite.Group()
-            sprite_positions = [(100, 200), (100, 300), (500, 200), (500, 300)]
+            sprite_positions = [(100, 250), (100, 350), (500, 250), (500, 350)]
             for i in range(4):
-                sprite = Sprite(sprite_positions[i][0], sprite_positions[i][1], 200, 50, random_countries_rus[i])
+                sprite = Sprite(sprite_positions[i][0], sprite_positions[i][1], 220, 50, random_countries_rus[i])
                 sprite_sprites.add(sprite)
 
             wrong_button = False
@@ -818,23 +862,28 @@ def Game(type1, type2):
 
             percent = int((N - wrong_answer) / N) * 100
 
-            # Обновление значения процента в выбранном режиме
-            cursor.execute(f"UPDATE setting SET {type2} = ? WHERE login = ?", (percent, LOGIN))
-            conn.commit()
+            if LOGIN is not None:
 
-            # Закрытие соединения с базой данных
-            conn.close()
+                # Обновление значения процента в выбранном режиме
+                cursor.execute(f"UPDATE setting SET {type2} = ? WHERE login = ?", (percent, LOGIN))
+                conn.commit()
 
-            end(res_game='Победа!')
+                # Закрытие соединения с базой данных
+                conn.close()
+
+            end('Победа!', percent=percent)
 
         if 'mod_flag' in type2 and 'mod_eng' not in type2:
-            flag = pygame.transform.scale(pygame.image.load('data/images/' + type1 + '/Flag_' + random_country_eng + '.png'),
-                                          (window_width, window_height))
-            flag_rect = flag.get_rect()
+            flag = pygame.transform.scale(pygame.image.load(
+                'data/images/' + type1 + '/Flag_' + random_country_eng + '.png'), (300, 200))
+            flag_rect = flag.get_rect(center=(window_width // 2 - flag.get_width() // 2, 110))
             window.blit(flag, flag_rect)
+            pygame.draw.rect(window, 'black', flag_rect, 2)
 
         elif 'mod_flag' not in type2 and 'mod_eng' in type2:
-            print_text(random_country_eng, window_width / 2 - 60, 50, color='black', font_size=60)
+            txt = font1.render(random_country_eng.replace('_', ' '), True, 'black')
+            txt_x = (window_width - txt.get_width()) / 2
+            window.blit(txt, (txt_x, 50))
 
         for sprite in sprite_sprites:
             sprite.draw(window)
@@ -848,7 +897,7 @@ def Game(type1, type2):
                 if counter > 0:
                     text = str(counter).rjust(3)
                 else:
-                    end(res_game='Ты проиграл!')
+                    end('Ты проиграл!')
                 is_wrong_answer = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -872,7 +921,7 @@ def Game(type1, type2):
                     is_wrong_answer = False
 
         pygame.draw.rect(window, 'grey', (720, 0, 800, 40))
-        window.blit(font.render(text, True, (0, 0, 0)), (720, 10))
+        window.blit(font1.render(text, True, 'black'), (720, 1))
 
         pygame.display.update()
         pygame.display.flip()
@@ -891,9 +940,9 @@ def draw_all_towns(window, town_color, towns):
 
 
 # режим города Америки
-def Game_America():
+def Game_America(type_ed):
     type = 'Америка'
-    game(type, America_image,
+    game(type_ed, type, America_image,
          [(458, 254), (472, 246), (487, 239), (437, 302), (393, 289), (432, 312), (253, 272), (241, 259), (235, 212),
           (520, 232), (489, 220), (444, 235), (356, 208), (352, 277), (372, 256), (108, 158), (239, 221), (362, 292),
           (460, 322), (487, 326), (454, 328), (432, 281), (436, 266), (419, 274), (445, 395), (464, 366), (501, 353),
@@ -903,9 +952,9 @@ def Game_America():
 
 
 # режим города Азии
-def Game_Asia():
+def Game_Asia(typed_ed):
     type = 'Азия'
-    game(type, Asia_image,
+    game(typed_ed, type, Asia_image,
          [(28, 267), (44, 279), (38, 293), (82, 269), (101, 265), (106, 277), (128, 272), (70, 312), (72, 300),
           (98, 301), (103, 320), (117, 339), (81, 369), (79, 386), (101, 425), (109, 439), (171, 378), (148, 372),
           (111, 289), (149, 346), (135, 304), (172, 298), (187, 312), (172, 287), (214, 275), (223, 269), (219, 284),
@@ -918,9 +967,9 @@ def Game_Asia():
 
 
 # режим города Европы
-def Game_Europe():
+def Game_Europe(typed_ed):
     type = 'Европа'
-    game(type, Europe_image,
+    game(typed_ed, type, Europe_image,
          [(350, 464), (359, 529), (355, 407), (542, 475), (243, 296), (220, 453), (113, 491), (484, 527), (407, 371),
           (381, 341), (366, 248), (354, 188), (474, 233), (479, 196), (484, 266), (522, 183), (430, 387), (83, 456),
           (306, 379), (286, 385), (288, 293), (151, 456), (258, 346), (281, 318), (365, 300), (437, 309), (137, 48),
@@ -932,7 +981,7 @@ def Game_Europe():
 
 
 # начало игры, режим города
-def game(type, image, towns):
+def game(typed_ed, type, image, towns):
     global LOGIN
 
     res = ''
@@ -956,6 +1005,18 @@ def game(type, image, towns):
     town_and_cords = get_random_towns(type)
     cords = town_and_cords[1].split(', ')
     while True:
+        if typed_ed == 'education':
+            pygame.draw.circle(window, 'Orange', (int(cords[0]), int(cords[1])), 4)
+        if len(towns) - 1 == len(used_towns):
+            end(res_game='Отличный результат', percent=100)
+            if LOGIN is not None:
+                # Обновление значения процента в выбранном режиме
+                cursor.execute(f"UPDATE setting SET mod_town = ? WHERE login = ?", (100, LOGIN))
+                conn.commit()
+
+                # Закрытие соединения с базой данных
+                conn.close()
+            break
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -985,15 +1046,17 @@ def game(type, image, towns):
 
             print_text(f'Число попыток: {str(answers)}', 550, 550, color='black')
 
-            if kol == 10:
+            if kol == len(towns):
                 percent = int((N - wrong_answer) / N) * 100
 
-                # Обновление значения процента в выбранном режиме
-                cursor.execute(f"UPDATE setting SET mod_town = ? WHERE login = ?", (percent, LOGIN))
-                conn.commit()
+                if LOGIN is not None:
 
-                # Закрытие соединения с базой данных
-                conn.close()
+                    # Обновление значения процента в выбранном режиме
+                    cursor.execute(f"UPDATE setting SET mod_town = ? WHERE login = ?", (percent, LOGIN))
+                    conn.commit()
+
+                    # Закрытие соединения с базой данных
+                    conn.close()
 
                 if 0 <= percent < 30:
                     res = 'Плохой результат'
@@ -1003,20 +1066,22 @@ def game(type, image, towns):
                     res = 'Хороший результат'
                 elif 90 <= percent <= 100:
                     res = 'Отличный результат!'
-                end(res)
+                end(res, percent=percent)
 
             if answers == 0:
-                end(res_game='Ты проиграл!')
+                end('Ты проиграл!')
 
         pygame.display.flip()
 
 
 # конец игры, финальное окно
-def end(res_game):
+def end(res_game, percent=None):
     pygame.display.set_caption('Конец игры')
     window.fill('white', (0, 0, window_width, window_height))
 
     print_text(res_game, 50, 100, color='brown', font_size=50)
+    if percent is not None:
+        print_text(f'Правильно на {percent}%', 50, 145, color='brown', font_size=50)
 
     print_text('Нажмите любую клавишу,', 50, 250, color='brown')
     print_text('чтобы выйти', 50, 300, color='brown')
@@ -1024,7 +1089,8 @@ def end(res_game):
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
-                Menu()
+                pygame.quit()
+                quit()
 
         pygame.display.flip()
 
