@@ -760,7 +760,6 @@ def Check_setting():
                         mod_education = False
                     else:
                         Education_color = 'red'
-                        Town_color = 'brown'
                         Flags_color = 'brown'
                         Eng_color = 'brown'
                         mod_education = True
@@ -994,7 +993,8 @@ def game(typed_ed, type, image, towns):
     window.blit(image, (0, 0))
 
     pygame.draw.rect(window, 'grey', (550, 440, 250, 150))
-
+    if type == 'Европа':
+        pygame.draw.line(window, 'black', (623, 332), (623, 337))
     town_color = 'brown'
     draw_all_towns(window, town_color, towns)
 
@@ -1023,11 +1023,14 @@ def game(typed_ed, type, image, towns):
                 quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
+                print(mouse_x, mouse_y)
                 if abs(mouse_x - int(cords[0])) < 5 and abs(mouse_y - int(cords[1])) < 5:
                     kol += 1
                     used_towns.append(town_and_cords[0])
                     pygame.draw.circle(window, 'green', (int(cords[0]), int(cords[1])), 4)
                 else:
+                    if typed_ed == 'education':
+                        pygame.draw.circle(window, 'brown', (int(cords[0]), int(cords[1])), 4)
                     answers -= 1
                     wrong_answer += 1
                 town_and_cords = get_random_towns(type)
