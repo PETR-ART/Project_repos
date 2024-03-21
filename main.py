@@ -10,10 +10,6 @@ LOGIN = None
 # количество раундов
 N = 10
 
-# Подключение к базе данных
-conn = sqlite3.connect('comandproject.db')
-cursor = conn.cursor()
-
 # словари со странами
 America = {'США': 'USA', 'Канада': 'Canada', 'Мексика': 'Mexico', 'Куба': 'Cuba', 'Бразилия': 'Brazil',
            'Аргентина': 'Argentina', 'Чили': 'Chile', 'Перу': 'Peru', 'Колумбия': 'Colombia', 'Венесуэла': 'Venezuela',
@@ -383,6 +379,10 @@ def Register():
 
                     if login != '' and password != '':
                         try:
+                            # Подключение к базе данных
+                            conn = sqlite3.connect('comandproject.db')
+                            cursor = conn.cursor()
+
                             # Проверка наличия логина в базе данных
                             cursor.execute("SELECT login FROM setting WHERE login=?", (login,))
                             result = cursor.fetchone()
@@ -527,6 +527,10 @@ def Enter():
 
                     if login != '' and password != '':
                         try:
+                            # Подключение к базе данных
+                            conn = sqlite3.connect('comandproject.db')
+                            cursor = conn.cursor()
+
                             # Проверка наличия логина в базе данных
                             cursor.execute("SELECT password FROM setting WHERE login=?", (login,))
                             result = cursor.fetchone()
@@ -594,6 +598,10 @@ def Enter():
 
 # функция написания рейтинга для нужного мода
 def print_rating(name, mode, x, y):
+    # Подключение к базе данных
+    conn = sqlite3.connect('comandproject.db')
+    cursor = conn.cursor()
+
     cursor.execute(f"SELECT login, {mode} FROM setting ORDER BY {mode} DESC LIMIT 5")
     rows = cursor.fetchall()
 
@@ -607,6 +615,9 @@ def print_rating(name, mode, x, y):
             percentage = 0
         print_text(f'{login[:6]} - {percentage}%', x, y + row_y, color='red')
         row_y += 50
+
+    # Закрытие соединения с базой данных
+    conn.close()
 
 
 # рейтинг
@@ -742,6 +753,7 @@ def Check_setting():
                         Flags_color = 'red'
                         Eng_color = 'brown'
                         Town_color = 'brown'
+                        Education_color = 'brown'
                         mod_flag = True
 
                 if button_Town_sprite.rect.collidepoint(mouse_pos):
@@ -750,6 +762,7 @@ def Check_setting():
                         mod_towns = False
                     else:
                         Town_color = 'red'
+                        Education_color = 'brown'
                         Flags_color = 'brown'
                         Eng_color = 'brown'
                         mod_towns = True
@@ -760,9 +773,10 @@ def Check_setting():
                         mod_education = False
                     else:
                         Education_color = 'red'
+                        mod_education = True
+                        Town_color = 'brown'
                         Flags_color = 'brown'
                         Eng_color = 'brown'
-                        mod_education = True
 
                 if button_Eng_sprite.rect.collidepoint(mouse_pos):
                     if mod_eng:
@@ -772,19 +786,17 @@ def Check_setting():
                         Eng_color = 'red'
                         Flags_color = 'brown'
                         Town_color = 'brown'
+                        Education_color = 'brown'
                         mod_eng = True
 
-                type_ed = ''
-
                 if button_next_sprite.rect.collidepoint(mouse_pos):
-                    if mod_education == True:
-                        type_ed = 'education'
-                    if Europe and Europe_color == 'red' and mod_towns and Town_color == 'red':
-                        Game_Europe(type_ed)
-                    if America and America_color == 'red' and mod_towns and Town_color == 'red':
-                        Game_America(type_ed)
-                    if Asia and Asia_color == 'red' and mod_towns and Town_color == 'red':
-                        Game_Asia(type_ed)
+                    if mod_towns and Town_color == 'red' or mod_education and Education_color == 'red':
+                        if Europe and Europe_color == 'red':
+                            Game_Europe('education' if mod_education and Education_color == 'red' else '')
+                        if America and America_color == 'red':
+                            Game_America('education' if mod_education and Education_color == 'red' else '')
+                        if Asia and Asia_color == 'red':
+                            Game_Asia('education' if mod_education and Education_color == 'red' else '')
 
                     type1 = ''
                     type2 = ''
@@ -862,6 +874,9 @@ def Game(type1, type2):
             percent = int((N - wrong_answer) / N) * 100
 
             if LOGIN is not None:
+                # Подключение к базе данных
+                conn = sqlite3.connect('comandproject.db')
+                cursor = conn.cursor()
 
                 # Обновление значения процента в выбранном режиме
                 cursor.execute(f"UPDATE setting SET {type2} = ? WHERE login = ?", (percent, LOGIN))
@@ -1010,6 +1025,10 @@ def game(typed_ed, type, image, towns):
         if len(towns) - 1 == len(used_towns):
             end(res_game='Отличный результат', percent=100)
             if LOGIN is not None:
+                # Подключение к базе данных
+                conn = sqlite3.connect('comandproject.db')
+                cursor = conn.cursor()
+
                 # Обновление значения процента в выбранном режиме
                 cursor.execute(f"UPDATE setting SET mod_town = ? WHERE login = ?", (100, LOGIN))
                 conn.commit()
@@ -1023,8 +1042,7 @@ def game(typed_ed, type, image, towns):
                 quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                print(mouse_x, mouse_y)
-                if abs(mouse_x - int(cords[0])) < 5 and abs(mouse_y - int(cords[1])) < 5:
+                if abs(mouse_x - int(cords[0])) < 10 and abs(mouse_y - int(cords[1])) < 10:
                     kol += 1
                     used_towns.append(town_and_cords[0])
                     pygame.draw.circle(window, 'green', (int(cords[0]), int(cords[1])), 4)
@@ -1053,6 +1071,9 @@ def game(typed_ed, type, image, towns):
                 percent = int((N - wrong_answer) / N) * 100
 
                 if LOGIN is not None:
+                    # Подключение к базе данных
+                    conn = sqlite3.connect('comandproject.db')
+                    cursor = conn.cursor()
 
                     # Обновление значения процента в выбранном режиме
                     cursor.execute(f"UPDATE setting SET mod_town = ? WHERE login = ?", (percent, LOGIN))
